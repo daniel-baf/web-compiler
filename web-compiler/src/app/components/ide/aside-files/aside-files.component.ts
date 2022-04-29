@@ -9,18 +9,14 @@ import { TabFile } from 'src/app/models/tab-file.model';
 export class AsideFilesComponent implements OnInit {
   @Input() fileNames: TabFile[] = [];
   @Output() fileToEdit = new EventEmitter<TabFile>();
+  @Input() activeFile: number = 0;
 
   constructor() {}
 
   ngOnInit(): void {}
 
   switchTab(tab: TabFile, id: number) {
-    // remove class of all uls
-    document.querySelectorAll('.switchableTabBtn').forEach((ul_t) => {
-      ul_t.classList.remove('active');
-    });
-    // add active class to selected file
-    document.getElementById(`file-${id}`)?.classList.add('active');
+    this.activeFile = id;
     this.fileToEdit.emit(tab);
   }
 }

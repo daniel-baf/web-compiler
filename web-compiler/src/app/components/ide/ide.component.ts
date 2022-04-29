@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TabFile } from 'src/app/models/tab-file.model';
+import { UtilsService } from 'src/app/services/Utils.service';
 
 @Component({
   selector: 'app-ide',
@@ -10,16 +11,18 @@ export class IdeComponent implements OnInit {
   activeFile = 0;
   tabFiles: TabFile[] = [];
 
-  constructor() {}
+  constructor(private utils: UtilsService) {}
 
   ngOnInit(): void {}
 
-  addTab(tab: TabFile) {
+  addTab(tabs: TabFile[]) {
     // search if file already exist
-    if (this.getIndexFromTab(tab.tabName) === -1) {
-      this.tabFiles.push(tab);
-      this.activeFile = this.tabFiles.length - 1;
-    }
+    tabs.forEach((tab) => {
+      if (this.getIndexFromTab(tab.tabName) === -1) {
+        this.tabFiles.push(tab);
+        this.activeFile = this.tabFiles.length - 1;
+      }
+    });
   }
 
   getIndexFromTab(name: string) {
@@ -33,5 +36,14 @@ export class IdeComponent implements OnInit {
 
   switchTab(tab: TabFile) {
     this.activeFile = this.getIndexFromTab(tab.tabName);
+  }
+
+  execVoidAction(action: string) {
+    if (action === 'download' && this.tabFiles.length > 0) {
+      this.utils.createDownloadableTextFile(
+        this.tabFiles[this.activeFile].tabData,
+        this.tabFiles[this.activeFile].tabName
+      );
+    }
   }
 }

@@ -12,6 +12,7 @@
       id="file-{{ i }}"
       type="button"
       class="list-group-item list-group-item-action switchableTabBtn"
+      [ngClass]="{ active: i === activeFile }"
       (click)="switchTab(fileName, i)"
     >
       {{ fileName.tabName }}.clr
