@@ -1,0 +1,188 @@
+<!-- Nav tabs -->
+<ul class="nav nav-tabs" id="navId">
+  <li class="nav-item">
+    <a class="nav-link active" href="">IDE CLR</a>
+  </li>
+  <li class="nav-item dropdown">
+    <a
+      class="nav-link dropdown-toggle"
+      data-toggle="dropdown"
+      href="#"
+      role="button"
+      aria-haspopup="true"
+      aria-expanded="false"
+      >Archivo</a
+    >
+    <div class="dropdown-menu">
+      <a
+        class="dropdown-item"
+        href="#"
+        role="button"
+        data-toggle="modal"
+        data-target="#newTabModal"
+        >Nueva pestaña</a
+      >
+      <a
+        class="dropdown-item"
+        href="#"
+        role="button"
+        data-toggle="modal"
+        data-target="#modalFileUpload"
+        >Cargar</a
+      >
+      <div class="dropdown-divider"></div>
+      <a class="dropdown-item" href="#" role="button" (click)="downloadFIle()"
+        >Descargar</a
+      >
+      <a class="dropdown-item" href="#" role="button" (click)="closeTab()"
+        >Cerrar</a
+      >
+    </div>
+  </li>
+  <li class="nav-item">
+    <a href="#exec-file" class="nav-link">Ejecutar</a>
+  </li>
+  <li class="nav-item">
+    <a href="#" class="nav-link disabled">Disabled</a>
+  </li>
+  <li class="nav-item dropdown">
+    <a
+      class="nav-link dropdown-toggle"
+      data-toggle="dropdown"
+      href="#"
+      role="button"
+      aria-haspopup="true"
+      aria-expanded="false"
+      >Acciones</a
+    >
+    <div class="dropdown-menu">
+      <a class="dropdown-item" href="#get-reports">Ver reportes</a>
+      <a class="dropdown-item" href="#img-galery">Coleccion de imagenes</a>
+      <div class="dropdown-divider"></div>
+      <a class="dropdown-item" href="#toggle-console-view"
+        >Mostrar/Ocultar consola</a
+      >
+    </div>
+  </li>
+</ul>
+
+<!-- ALERT MESSAGE -->
+<div class="alert alert-warning" role="alert" *ngIf="showError">
+  <strong>Ooops</strong> {{ errorMessage }}
+</div>
+
+<!-- Modal for new tab -->
+<div
+  class="modal fade"
+  id="newTabModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="modelTitleId"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Ingresa un nombre</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="newFileName">Archivo (.clr)</label>
+          <input
+            type="text"
+            class="form-control"
+            name=""
+            id=""
+            aria-describedby="helpId"
+            placeholder="Ingresa el nombre del nuevo archivo"
+            [(ngModel)]="newTabName"
+          />
+          <small id="helpId" class="form-text text-muted">Ejemplo, test</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-dismiss="modal"
+          (click)="newTab()"
+        >
+          Crear
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for file load -->
+<div
+  class="modal fade"
+  id="modalFileUpload"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="modelTitleId"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Carga archivos</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for=""></label>
+          <input
+            type="file"
+            class="form-control-file"
+            name=""
+            id=""
+            placeholder="Seleccionar"
+            aria-describedby="fileHelpId"
+          />
+          <small id="fileHelpId" class="form-text text-muted"
+            >Selecciona los archivos .clr</small
+          >
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="uploadFiles()"
+          data-dismiss="modal"
+        >
+          Subir
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $("#navId a").click((e) => {
+    e.preventDefault();
+    $(this).tab("show");
+  });
+</script>

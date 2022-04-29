@@ -1,0 +1,15 @@
+import { Component, Input, OnInit } from '@angular/core';
+import { TabFile } from 'src/app/models/tab-file.model';
+
+@Component({
+  selector: 'app-files-edit',
+  templateUrl: './files-edit.component.html',
+  styleUrls: ['./files-edit.component.css'],
+})
+export class FilesEditComponent implements OnInit {
+  @Input() activeTab: TabFile = new TabFile('', '');
+
+  constructor() {}
+
+  ngOnInit(): void {}
+}

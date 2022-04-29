@@ -1,1 +1,31 @@
-/* You can add global styles to this file, and also import other style files */
+.h90vh{
+    height: 90vh;
+}
+
+.h10vh{
+    max-height: 10vh;
+    margin: 1rem;
+}
+
+/* middle sizes  for split */
+.h25pctn{
+    height: 25%;
+}
+
+.h75pctn{
+    height: 75%;
+}
+
+.w100vw{
+    width: 100vw;
+
+}
+/* middle width for split */
+
+.w25pctn{
+    width: 25%;
+}
+
+.w75pctn{
+    width: 75%;
+}

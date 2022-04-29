@@ -1,0 +1,23 @@
+<div class="list-group">
+  <button
+    type="button"
+    class="list-group-item list-group-item-action alert alert-primary"
+  >
+    Archivos
+  </button>
+  <!-- List of items -->
+  <div *ngFor="let fileName of fileNames; let i = index">
+    <!-- use active class to show the selected file -->
+    <button
+      id="file-{{ i }}"
+      type="button"
+      class="list-group-item list-group-item-action switchableTabBtn"
+      (click)="switchTab(fileName, i)"
+    >
+      {{ fileName.tabName }}.clr
+    </button>
+  </div>
+  <button type="button" class="list-group-item list-group-item-action disabled">
+    Lista de archivos abiertos
+  </button>
+</div>
