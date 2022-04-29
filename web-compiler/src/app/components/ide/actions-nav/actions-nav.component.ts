@@ -58,8 +58,7 @@ export class ActionsNavComponent implements OnInit {
   }
 
   closeTab() {
-    // TODO close active tab
-    alert('TODO close tab');
+    this.voidEmitter.emit('close-tab');
   }
 
   private showErrorMessage(message: string): void {

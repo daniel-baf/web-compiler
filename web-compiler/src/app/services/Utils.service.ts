@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { TabFile } from '../models/tab-file.model';
 
 @Injectable({
   providedIn: 'root',
@@ -25,6 +26,7 @@ export class UtilsService {
     });
   }
 
+  // create a downloadable file with the data string, and name (name includes the extension)
   public createDownloadableTextFile(data: string, name: string) {
     // create object temp downloadable
     let downloadable = document.createElement('a'); // create a tmp link
@@ -35,5 +37,25 @@ export class UtilsService {
     });
     downloadable.href = window.URL.createObjectURL(tmpFile);
     downloadable.click();
+  }
+
+  // utilities
+  getIndexFromTab(name: string, tabArray: TabFile[]) {
+    for (let index = 0; index < tabArray.length; index++) {
+      if (tabArray[index].tabName === name) {
+        return index;
+      }
+    }
+    return -1;
+  }
+
+  // get confirmation before continue something
+  getConfirmation(message: string) {
+    let retVal = confirm(message);
+    if ((retVal = true)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

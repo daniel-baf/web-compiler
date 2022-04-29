@@ -15,35 +15,50 @@ export class IdeComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  // add a tab to the editable files
   addTab(tabs: TabFile[]) {
     // search if file already exist
     tabs.forEach((tab) => {
-      if (this.getIndexFromTab(tab.tabName) === -1) {
+      if (this.utils.getIndexFromTab(tab.tabName, this.tabFiles) === -1) {
         this.tabFiles.push(tab);
         this.activeFile = this.tabFiles.length - 1;
       }
     });
   }
 
-  getIndexFromTab(name: string) {
-    for (let index = 0; index < this.tabFiles.length; index++) {
-      if (this.tabFiles[index].tabName === name) {
-        return index;
-      }
+  // remove a tab from array
+  private closeTab() {
+    // show popup asking if user want to save changes before closing
+    if (
+      this.tabFiles.length > 0 &&
+      this.utils.getConfirmation(
+        'Seguro que deseas cerrar la pestaña? todos los cambios no guardados se perderán'
+      )
+    ) {
+      this.tabFiles.splice(this.activeFile, 1);
+      this.activeFile = this.tabFiles.length - 1;
     }
-    return -1;
   }
 
   switchTab(tab: TabFile) {
-    this.activeFile = this.getIndexFromTab(tab.tabName);
+    this.activeFile = this.utils.getIndexFromTab(tab.tabName, this.tabFiles);
   }
 
   execVoidAction(action: string) {
-    if (action === 'download' && this.tabFiles.length > 0) {
-      this.utils.createDownloadableTextFile(
-        this.tabFiles[this.activeFile].tabData,
-        this.tabFiles[this.activeFile].tabName
-      );
+    switch (action) {
+      case 'download':
+        if (this.tabFiles.length > 0) {
+          this.utils.createDownloadableTextFile(
+            this.tabFiles[this.activeFile].tabData,
+            this.tabFiles[this.activeFile].tabName
+          );
+        }
+        break;
+      case 'close-tab':
+        this.closeTab();
+        break;
+      default:
+        break;
     }
   }
 }
