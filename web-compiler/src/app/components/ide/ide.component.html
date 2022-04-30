@@ -1,6 +1,9 @@
 <div class="container-fluid">
   <div class="row h10vh w100vw">
-    <app-actions-nav (tabEmiter)="addTab($event)" (voidEmitter)="execVoidAction($event)"></app-actions-nav>
+    <app-actions-nav
+      (tabEmiter)="addTab($event)"
+      (voidEmitter)="execVoidAction($event)"
+    ></app-actions-nav>
   </div>
   <div class="row h90vh w100vw">
     <div class="col-sm-2 w25pctn">

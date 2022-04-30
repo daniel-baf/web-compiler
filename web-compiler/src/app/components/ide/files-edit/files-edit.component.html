@@ -1,20 +1,15 @@
-<div class="alert alert-primary alert-dismissible fade show" role="alert">
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-    <span class="sr-only">Close</span>
-  </button>
-  <strong>Holy guacamole!</strong> Aqui podras editar multiples archivos .clr
-</div>
-
-<div class="w100pctn">
-  <textarea
-    class="form-control"
-    name="console"
-    id="console"
-    rows="22"
-    cols="220"
-    placeholder="Escribe codigo CLR aqui"
-    [(ngModel)]="this.activeTab.tabData"
-    >{{ activeTab.tabData }}</textarea
-  >
+<!-- TEXT EDIT -->
+<div class="linedwrap">
+  <div class="linedtextarea">
+    <textarea
+      class="lined w100pctn"
+      name="console"
+      id="console"
+      rows="26"
+      cols="218"
+      placeholder="Escribe codigo CLR aqui"
+      [(ngModel)]="this.activeTab.tabData"
+      >{{ activeTab.tabData }}</textarea
+    >
+  </div>
 </div>

@@ -7,6 +7,7 @@ import { TabFile } from 'src/app/models/tab-file.model';
   styleUrls: ['./files-edit.component.css'],
 })
 export class FilesEditComponent implements OnInit {
+
   @Input() activeTab: TabFile = new TabFile('', '');
 
   constructor() {}
