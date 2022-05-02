@@ -1,12 +1,22 @@
-<div class="w100pctn">
-  <label for="console">Consola de salida</label>
-  <textarea
-    class="form-control"
-    name="console"
-    id="console"
-    rows="6"
-    cols="220"
-    readonly
-    placeholder="En este recuadro veras todo lo relacionado con tu programa"
-  ></textarea>
+<div class="media">
+  <div class="w100pctn">
+    <label for="console">Consola de salida</label>
+
+    <textarea
+      name=""
+      id=""
+      cols="10"
+      rows="6"
+      placeholder="Los resultados de consola seran visualizados en esta ventana"
+      class="form-control"
+      readonly
+      >{{ consoleData }}</textarea
+    >
+    <!-- button section -->
+    <div class="floating">
+      <button type="button" class="btn btn-light" (click)="clear()">
+        Limpiar
+      </button>
+    </div>
+  </div>
 </div>

@@ -7,10 +7,17 @@ import { TabFile } from 'src/app/models/tab-file.model';
   styleUrls: ['./files-edit.component.css'],
 })
 export class FilesEditComponent implements OnInit {
-
   @Input() activeTab: TabFile = new TabFile('', '');
 
   constructor() {}
 
   ngOnInit(): void {}
+
+  checkTab(e: any) {
+    if (e.keyCode === 9) {
+      e.preventDefault();
+      this.activeTab.tabData += '\t';
+      $('#console').focus();
+    }
+  }
 }

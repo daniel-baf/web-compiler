@@ -5,4 +5,7 @@ textarea {
   padding-left: 35px;
   padding-top: 10px;
   border-color: #ccc;
+  width: 83vw;
+  resize: none;
+  tab-size: 4;
 }

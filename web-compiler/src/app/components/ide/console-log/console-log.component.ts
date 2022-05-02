@@ -1,15 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-console-log',
   templateUrl: './console-log.component.html',
-  styleUrls: ['./console-log.component.css']
+  styleUrls: ['./console-log.component.css'],
 })
 export class ConsoleLogComponent implements OnInit {
+  consoleData: string = '';
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
+
+  print(data: string) {
+    this.consoleData += `${data}\n`;
   }
 
+  clear() {
+    this.consoleData = '';
+  }
 }

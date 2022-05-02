@@ -57,8 +57,14 @@ export class ActionsNavComponent implements OnInit {
     this.voidEmitter.emit('download');
   }
 
-  closeTab() {
+  closeTab(e: any) {
+    e.preventDefault();
     this.voidEmitter.emit('close-tab');
+  }
+
+  compileCode(e: any) {
+    e.preventDefault();
+    this.voidEmitter.emit('compile');
   }
 
   private showErrorMessage(message: string): void {

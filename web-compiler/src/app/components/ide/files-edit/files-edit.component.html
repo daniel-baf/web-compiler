@@ -1,3 +1,4 @@
+<script src="http://teddevito.com/demos/js/jquery.textarea.js"></script>
 <!-- TEXT EDIT -->
 <div class="linedwrap">
   <div class="linedtextarea">
@@ -6,8 +7,9 @@
       name="console"
       id="console"
       rows="26"
-      cols="218"
+      cols="10"
       placeholder="Escribe codigo CLR aqui"
+      (keydown)="checkTab($event)"
       [(ngModel)]="this.activeTab.tabData"
       >{{ activeTab.tabData }}</textarea
     >

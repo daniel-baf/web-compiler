@@ -1,3 +1,14 @@
-.expand-100{
-    width: 100%;
+.media {
+  position: relative;
+}
+
+.floating {
+  position: absolute;
+  right: 1%;
+  bottom: 5%;
+}
+
+textarea {
+  width: 83vw;
+  resize: none;
 }
