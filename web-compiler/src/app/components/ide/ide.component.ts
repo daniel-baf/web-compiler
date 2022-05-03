@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { TabFile } from 'src/app/models/tab-file.model';
-import { CRLManagerService } from 'src/app/services/CRLManager.service';
+import { CRLManagerService } from 'src/app/services/CRL/CRLManager.service';
 import { UtilsService } from 'src/app/services/Utils.service';
 import { ConsoleLogComponent } from './console-log/console-log.component';
+import { LoadScriptsService } from 'src/app/services/load-scripts.service';
 
 @Component({
   selector: 'app-ide',
@@ -16,9 +17,13 @@ export class IdeComponent implements OnInit {
     new ConsoleLogComponent();
 
   constructor(
-    private utils: UtilsService,
-    private CRLManager: CRLManagerService
-  ) {}
+    private _utils: UtilsService,
+    private CRLManager: CRLManagerService,
+    private _scriptLoader: LoadScriptsService
+  ) {
+    // load scripts for parser
+    _scriptLoader.load_scripts(['CRL/CRLUtils', 'CRL/CRL']);
+  }
 
   ngOnInit(): void {
     // create temp file to test
@@ -29,7 +34,7 @@ export class IdeComponent implements OnInit {
   addTab(tabs: TabFile[]) {
     // search if file already exist
     tabs.forEach((tab) => {
-      if (this.utils.getIndexFromTab(tab.tabName, this.tabFiles) === -1) {
+      if (this._utils.getIndexFromTab(tab.tabName, this.tabFiles) === -1) {
         this.tabFiles.push(tab);
         this.activeFile = this.tabFiles.length - 1;
       }
@@ -41,7 +46,7 @@ export class IdeComponent implements OnInit {
     // show popup asking if user want to save changes before closing
     if (
       this.tabFiles.length > 0 &&
-      this.utils.getConfirmation(
+      this._utils.getConfirmation(
         'Seguro que deseas cerrar la pestaña? todos los cambios no guardados se perderán'
       )
     ) {
@@ -52,15 +57,20 @@ export class IdeComponent implements OnInit {
 
   // change the file view
   switchTab(tab: TabFile) {
-    this.activeFile = this.utils.getIndexFromTab(tab.tabName, this.tabFiles);
+    this.activeFile = this._utils.getIndexFromTab(tab.tabName, this.tabFiles);
   }
 
   // compile the code into the editor
   compileCode() {
-    let toPrint = this.CRLManager.execAnalysis(
-      this.tabFiles[this.activeFile].tabData
-    );
-    this.consoleL.print(toPrint);
+    this.consoleL.clear();
+    try {
+      let toPrint = this.CRLManager.execAnalysis(
+        this.tabFiles[this.activeFile].tabData
+      );
+      this.consoleL.print(toPrint);
+    } catch (error) {
+      this.consoleL.print(error)
+    }
   }
 
   // used to exec multiple void (click) children methods on EventEmitters
@@ -68,7 +78,7 @@ export class IdeComponent implements OnInit {
     switch (action) {
       case 'download':
         if (this.tabFiles.length > 0) {
-          this.utils.createDownloadableTextFile(
+          this._utils.createDownloadableTextFile(
             this.tabFiles[this.activeFile].tabData,
             this.tabFiles[this.activeFile].tabName
           );

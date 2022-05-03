@@ -12,7 +12,7 @@ export class ConsoleLogComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  print(data: string) {
+  print(data: any) {
     this.consoleData += `${data}\n`;
   }
 

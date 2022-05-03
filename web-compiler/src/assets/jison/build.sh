@@ -4,5 +4,5 @@ rm -rf CRL.js
 echo "  Compiling"
 jison CRL.jison
 echo "  Moving js file to new directory"
-mv CRL.js ../../app/models/jison/
+mv CRL.js ../js/CRL/
 echo "      Done, js file created"
