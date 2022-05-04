@@ -78,8 +78,8 @@
 [0-9]+\b              return 'INT_VAL';    // number: 1
 "'"(.)"'"             return 'CHAR_VAL';   // char value: 'a'
 '"'[^'"'\n\r]*'"'     return 'VAL_COM';    // value into comillas: "hi"
+[a-zA-Z][a-zA-Z0-9_]*".clr" return "CLR_FILE";
 [a-zA-Z][a-zA-Z0-9_]* return 'ID';      // identifier: myId
-[a-zA-Z][a-zA-Z0-9_]*".clr"     return "CLR_FILE";
 // split line
 \n                    return 'CR';    // new line
 \t                    return 'TAB';   // tab
@@ -100,150 +100,44 @@
 %left '||', '!&', '&&', '!'
 %left '(', ')'
 
-// %nonassoc IF_WITHOUT_ELSE
-// %nonassoc ELSE
+%nonassoc if
+%nonassoc else
 
 %start mp
 
 %%
+// selection
+    // : if_stmt
+    // | while_stmt
+    // | for_stmt
+// ;
 
-/* language grammar */
+// funcdef
+    // function
+    // main function
+// ;
 
-mp
-    : body_ak 'EOF'
-;
+// if_stmt
+    // : if
+    // | if else
+    // | if else_if_list
+    // | if else_if_list else
+// ;
 
-body_ak
-    : body_ak body_content
-    | body_content
-;
+// if
+    // : 'IF' '(' expr ')' ':' stmt 'CR'
+    // | 'IF' '(' expr ')' ':'
+// ;
 
-body_content
-    : instructions
-    | func_dec
-;
+// else
+    // : 'ELSE' ':' stmt 'CR'
+// ;
 
-instructions
-    : tabs instructions_sub
-    | instructions_sub
-    | 'CR'
-;
+// else_if_list
+    // : else_if_list else_if
+    // | else_if
+// ;
 
-instructions_sub
-    : var_actions
-    | func_call
-;
-
-// TODO return and continue productions
-
-func_dec
-    : var_type id '(' param_request ')' ':' 'CR' instructions
-    | 'VOID' 'MAIN' '(' ')' ':' 'CR'
-;
-
-var_actions
-    : var_dec 'CR'
-    | var_assign 'CR'
-;
-
-var_dec
-    : var_type var_assign_list
-;
-
-var_assign_list
-    : var_assign_list ',' var_assign_custom
-    | var_assign_custom
-;
-
-var_assign_custom
-    : var_assign
-    | id
-;
-
-var_assign
-    : id '=' expr
-;
-
-expr
-    : arythmetic_expr
-    | op_expr
-    | compare_expr
-    | logical_expr
-    // allowed values
-    | element
-    | func_call
-;
-
-arythmetic_expr
-    : '-' expr %prec UMINUS
-    | expr '+' expr
-    | expr '-' expr
-    | expr '*' expr
-    | expr '/' expr
-    | expr '%' expr
-    | expr '^' expr
-    | '(' expr ')'
-;
-
-op_expr
-    : id '++'
-    | id '--'
-;
-
-compare_expr
-    : expr '>' expr                
-    | expr '<' expr
-    | expr '==' expr
-    | expr '!=' expr
-    | expr '<=' expr
-    | expr '>=' expr
-;
-
-logical_expr
-    // : expr '|&' expr
-    : expr '&&' expr
-    | expr '||' expr
-    | '!' expr
-;
-
-func_call
-    : id '(' param_send ')'
-    | id '(' ')'
-;
-
-param_send
-    : param_send ',' expr
-    | expr
-;
-
-param_request
-    : param_request ',' var_type id
-    | var_type id
-;
-
-element
-    : id                { $$=$1; }
-    | 'INT_VAL'         { $$=Number(yytext); }        
-    | 'CHAR_VAL'        { $$=yytext.replaceAll("'", ""); }
-    | 'DOUBLE_VAL'      { $$=Number(yytext); }
-    | 'VAL_COM'         { $$=yytext.replaceAll("\"", ""); }
-    | 'BOOL_VAL'        { $$=yytext==="true"; }
-;
-
-var_type
-    : 'INT'             { $$=yytext; }
-    | 'CHAR'            { $$=yytext; }
-    | 'BOOL'            { $$=yytext; }
-    | 'DOUBLE'          { $$=yytext; }
-    | 'STRING'          { $$=yytext; }
-    | 'VOID'            { $$=yytext; }
-;
-
-tabs
-    : tabs 'TAB'
-    | 'TAB'
-;
-
-id
-    : 'ID'      { $$ =  new AstNode(value = yytext);;}
-;
+// else_if
+    // : 'ELSE' 'IF' '(' expr ')' ':' stmt 'CR'
+// ;

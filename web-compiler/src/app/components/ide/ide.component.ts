@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { TabFile } from 'src/app/models/tab-file.model';
-import { CRLManagerService } from 'src/app/services/CRL/CRLManager.service';
+import { CLRManagerService } from 'src/app/services/CLR/CLRManager.service';
 import { UtilsService } from 'src/app/services/Utils.service';
 import { ConsoleLogComponent } from './console-log/console-log.component';
 import { LoadScriptsService } from 'src/app/services/load-scripts.service';
@@ -18,16 +18,16 @@ export class IdeComponent implements OnInit {
 
   constructor(
     private _utils: UtilsService,
-    private CRLManager: CRLManagerService,
+    private CLRManager: CLRManagerService,
     private _scriptLoader: LoadScriptsService
   ) {
     // load scripts for parser
-    _scriptLoader.load_scripts(['CRL/CRLUtils', 'CRL/CRL']);
+    _scriptLoader.load_scripts(['CLR/CLRUtils', 'CLR/CLR']);
   }
 
   ngOnInit(): void {
     // create temp file to test
-    this.addTab([new TabFile('test.crl', '')]);
+    this.addTab([new TabFile('test.clr', "x = 21")]);
   }
 
   // add a tab to the editable files
@@ -64,12 +64,12 @@ export class IdeComponent implements OnInit {
   compileCode() {
     this.consoleL.clear();
     try {
-      let toPrint = this.CRLManager.execAnalysis(
-        this.tabFiles[this.activeFile].tabData
+      let toPrint = this.CLRManager.execAnalysis(
+        this.tabFiles[this.activeFile].tabData + '\n'
       );
       this.consoleL.print(toPrint);
     } catch (error) {
-      this.consoleL.print(error)
+      this.consoleL.print(error);
     }
   }
 

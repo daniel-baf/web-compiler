@@ -1,2 +1,2 @@
-declare var CRL: any; // CRL.js
+declare var CLR: any; // CRL.js
 declare var $: any;

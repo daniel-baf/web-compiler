@@ -3,11 +3,11 @@ import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root',
 })
-export class CRLManagerService {
+export class CLRManagerService {
   constructor() {}
 
   execAnalysis(data: string): string {
-    var output = CRL.parse(data + '\n');
+    var output = CLR.parse(data);
     if (output) {
       console.log('done');
     } else {

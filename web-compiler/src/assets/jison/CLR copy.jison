@@ -16,7 +16,7 @@
 <L_COM>\n       { this.pushState('INITIAL'); }
 <L_COM>.        { ; } // end of line comment
 // ignore whitespace && comments
-[\s\t\r]+       { /*ignore*/; }
+[ \r]+       { /*ignore*/; }
 // var value
 "true"|"false"        return 'BOOL_VAL';
 // var types
@@ -28,7 +28,7 @@
 "Boolean"             return 'BOOL';
 // headers
 "Importar"            return 'IMPORT';
-"Incerteza"           return 'UNCERTAINTY';return 'CR';
+"Incerteza"           return 'UNCERTAINTY';
 // function expressions
 "Si"                  return 'IF';
 "Sino"                return 'ELSE';
@@ -57,6 +57,7 @@
 "!="                  return '!=';    // not equal
 "<="                  return '<=';    // lower or equal than
 ">="                  return '>=';    // higher or equal than
+"="                   return '=';     // assignment
 // inc operations
 "++"                  return '++';    // increment
 "--"                  return '--';    // decrement
@@ -73,17 +74,19 @@
 "{"                   return '{';     // left curly bracket
 "}"                   return '}';     // right curly bracket
 // custom with regex
+[0-9]+("."[0-9]+)\b   return 'DOUBLE_VAL'; // decimal: 0.23
 [0-9]+\b              return 'INT_VAL';    // number: 1
-"\""(.)"\""           return 'CHAR_VAL';   // char value: 'a'
-[0-9]+("."[0-9]+)?\b  return 'DOUBLE_VAL'; // decimal: 0.23
-"\""[^"\""\n\r]*"\""  return 'VAL_COM';    // value into comillas: "hi"
+"'"(.)"'"             return 'CHAR_VAL';   // char value: 'a'
+'"'[^'"'\n\r]*'"'     return 'VAL_COM';    // value into comillas: "hi"
 [a-zA-Z][a-zA-Z0-9_]* return 'ID';      // identifier: myId
+[a-zA-Z][a-zA-Z0-9_]*".clr"     return "CLR_FILE";
 // split line
 \n                    return 'CR';    // new line
+\t                    return 'TAB';   // tab
 
 <<EOF>>               return 'EOF';   // end of file
 // lexical errors
-.                       { console.log("lexical error: " + this.yytext); } // error, not valid char token
+.                     return "INVALID_TKN";  // error, not valid char token
 
 /lex
 
@@ -97,33 +100,72 @@
 %left '||', '!&', '&&', '!'
 %left '(', ')'
 
-%nonassoc IF_WITHOUT_ELSE
-%nonassoc ELSE
+// %nonassoc IF_WITHOUT_ELSE
+// %nonassoc ELSE
 
 %start mp
 
 %%
 
- /* language grammar */
+/* language grammar */
 
-mp // <PROGRAM> <EOF>
-    : instructions 'EOF'
-    | 'EOF'
+mp
+    : body_ak 'EOF'
 ;
 
-instructions  // <SENTENCE> ... <SENTENCE>
-    : instructions instruction
-    | instruction
+body_ak
+    : body_ak body_content
+    | body_content
 ;
 
-instruction
-    : console_log
-    | var_actions
-    | 'CR'      { console.log("jumpline");}
-    | error     { console.log("error: invalid production" + $1); }
+body_content
+    : instructions
+    | func_dec
 ;
 
-console_log
-    : 'PRINT' '(' 'VAL_COM' ',' param_send ')'
-    | 'PRINT' '(' 'VAL_COM' ')'
+instructions
+    : tabs instructions_sub
+    | instructions_sub
+;
+
+instructions_sub
+    : var_actions
+    | func_call
+    | if_stmt
+    | 'CR'
+;
+
+// TODO return and continue productions
+
+if_stmt
+    : if
+    | if else
+    | if else_if_list
+    | if else_if_list else
+;
+
+if
+    : 'IF' '(' exp ')' common_inst
+;
+
+else
+    : 'ELSE' common_inst
+;
+
+else_if_list
+    : else_if_list else_if
+    | else_if
+;
+
+else_if
+    : 'ELSE' 'IF' '(' exp ')' common_inst
+;
+
+func_dec
+    : var_type id '(' param_request ')' common_inst
+    | 'VOID' 'MAIN' '(' ')' common_inst
+;
+
+common_inst
+    : ':' instructions
 ;
