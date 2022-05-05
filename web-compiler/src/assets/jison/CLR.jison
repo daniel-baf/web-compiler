@@ -41,6 +41,9 @@
 "DibujarTS"           return 'DRAW_TS';
 "DibujarAST"          return 'DRAW_AST';
 "DibujarEXP"          return 'DRAW_EXP';
+// inc operations
+"++"                  return '++';    // increment
+"--"                  return '--';    // decrement
 // arythmetic
 "+"                   return '+';     // addition
 "-"                   return '-';     // substraction
@@ -57,9 +60,6 @@
 ">"                   return '>';     // higher than
 "~"                   return '~';     // uncertainty operator
 "="                   return '=';     // assignment
-// inc operations
-"++"                  return '++';    // increment
-"--"                  return '--';    // decrement
 // logical
 "&&"                  return '&&';    // and
 "||"                  return '||';    // or
@@ -113,17 +113,47 @@ mp
 ;
 
 func_content
-    : func_content line 'CR'
-    | line 'CR'
+    : func_content stmt_tbs       { $1.push($2); $$=$1; }
+    | stmt_tbs                    { $$=[$1]; }
+;
+
+stmt_tbs
+    : tabs stmt         { $$ = new AstNode("statement", {left: $2, tabs: $1}); }
+    | stmt              { $$ = new AstNode("statement", {left: $1, tabs: 0}); }
+;
+
+stmt
+    : line 'CR'      { $$=$1; }
+    | selection 'CR' { $$=$1; }
+    | 'CR'           { $$=new AstNode("no-op"); }               // do not add to pile
 ;
 
 line
-    : var_dec
-    | var_assign
-    | func_call
-    | show_stmt
-    | draw_stmt
-    | return_stmt
+    : var_dec           { $$= $1; }
+    | var_assign        { $$= $1; }
+    | func_call         { $$= $1; }
+    | show_stmt         { $$= $1; }
+    | draw_stmt         { $$= $1; }
+    | return_stmt       { $$= $1; }
+;
+
+selection
+    : if_stmt          { $$= $1; }
+    | for_stmt         { $$= $1; }
+;
+
+if_stmt
+    : 'IF' '(' expr ')' ':'         { $$= new AstNode("if", {left: $3}); }
+    | 'ELSE' ':'                    { $$= new AstNode("else"); }
+    | 'ELSE' 'IF' '(' expr ')' ':'  { $$= new AstNode("elseif", {left: $4}); }
+;
+
+for_stmt
+    : 'FOR' '(' 'INT' var_assign ';' expr ';' op_sym  ')' ':'     
+        {
+            var vd = new AstNode("var_dec", { left: $3, right: $4});
+            $$= new AstNode("for", {left: vd, expr: $6, inc: $8}); 
+        }
 ;
 
 var_dec
@@ -135,7 +165,7 @@ var_assign
 ;
 
 show_stmt
-    : 'PRINT' '(' 'VAL_COM' ')'                     { $$=new AstNode('print', {value: $3.replaceAll("\"",""), params: null}); }
+    : 'PRINT' '(' 'VAL_COM' ')'                     { $$=new AstNode('print', {value: $3.replaceAll("\"","")}); }
     | 'PRINT' '(' 'VAL_COM' ',' parm_list ')'       { $$=new AstNode('print', {value: $3.replaceAll("\"",""), params: $5}); }
 ;
 
@@ -177,8 +207,12 @@ arythmetic_expr
 ;
 
 op_expr
-    : id '++'       { $$ = new AstNode("++", {left: $1}); }
-    | id '--'       { $$ = new AstNode("--", {left: $1}); }
+    : id op_sym       { $$ = new AstNode($2, {left: $1}); }
+;
+
+op_sym
+    : '++'          { $$="++"; }
+    | '--'          { $$="--"; }
 ;
 
 compare_expr
@@ -199,7 +233,7 @@ logical_expr
 
 func_call
     : id '(' parm_list ')'      { $$=new AstNode("func_call", {left: $1, params: $3}); }
-    | id '(' ')'                { $$=new AstNode("func_call", {left: $1, params: null}); }
+    | id '(' ')'                { $$=new AstNode("func_call", {left: $1}); }
 ;
 
 var_type
@@ -209,6 +243,11 @@ var_type
     | 'DOUBLE'          { $$ = 'DOUBLE'; }
     | 'STRING'          { $$ = 'STRING'; }
     | 'VOID'            { $$ = 'VOID'; }
+;
+
+tabs
+    : tabs 'TAB'        { $$=$1+1; }
+    | 'TAB'             { $$=1; }
 ;
 
 element
@@ -221,5 +260,5 @@ element
 ;
 
 id
-    : 'ID'      { $$=new AstNode('ID', {id: yytext, value:null}); }
+    : 'ID'      { $$=new AstNode('ID', {id: yytext}); }
 ;

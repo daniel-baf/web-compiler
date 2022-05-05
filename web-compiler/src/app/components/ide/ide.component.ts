@@ -27,7 +27,11 @@ export class IdeComponent implements OnInit {
 
   ngOnInit(): void {
     // create temp file to test
-    this.addTab([new TabFile('test.clr', "Int k = 21\nVoid print():\n")]);
+    this.addTab([
+      new TabFile(
+        'test.clr',
+        '\tBoolean valid = !(2 > 3)\n\tSi(valid):\n\t\tMostrar("hola")\n\tSino:\n\t\tMostrar("adios") ' + 
+        '    \'"hola pato\'"\n\tMostrar("hola h1")\'" adios pato 2 \'"\nPara(Int k = 1; k< 12; ++):\n')]);
   }
 
   // add a tab to the editable files
