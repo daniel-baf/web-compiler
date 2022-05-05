@@ -33,6 +33,7 @@
 "Si"                  return 'IF';
 "Sino"                return 'ELSE';
 "Para"                return 'FOR';
+"Mientras"            return 'WHILE';
 "Mostrar"             return 'PRINT';
 "Retorno"             return 'RETURN';
 "Detener"             return 'BREAK';
@@ -140,6 +141,7 @@ line
 selection
     : if_stmt          { $$= $1; }
     | for_stmt         { $$= $1; }
+    | while_stmt       { $$= $1; }
 ;
 
 if_stmt
@@ -154,6 +156,10 @@ for_stmt
             var vd = new AstNode("var_dec", { left: $3, right: $4});
             $$= new AstNode("for", {left: vd, expr: $6, inc: $8}); 
         }
+;
+
+while_stmt
+    : 'WHILE' '(' expr ')' ':'      { $$= new AstNode("while", {left: $3}); }    
 ;
 
 var_dec
