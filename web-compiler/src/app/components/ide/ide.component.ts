@@ -27,7 +27,7 @@ export class IdeComponent implements OnInit {
 
   ngOnInit(): void {
     // create temp file to test
-    this.addTab([new TabFile('test.clr', "x = 21")]);
+    this.addTab([new TabFile('test.clr', "Int k = 21\nVoid print():\n")]);
   }
 
   // add a tab to the editable files
@@ -65,7 +65,7 @@ export class IdeComponent implements OnInit {
     this.consoleL.clear();
     try {
       let toPrint = this.CLRManager.execAnalysis(
-        this.tabFiles[this.activeFile].tabData + '\n'
+        this.tabFiles[this.activeFile].tabData
       );
       this.consoleL.print(toPrint);
     } catch (error) {

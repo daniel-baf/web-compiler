@@ -1,17 +1,12 @@
 var finalprogram;
 
 class AstNode {
-  constructor(type, params, tabs = 0) {
+  constructor(type, params) {
     this.type = type;
-    this.tabs = tabs;
     for (var key in params) {
       this[key] = params[key];
     }
     return this;
-  }
-
-  setTabs(tabs) {
-    this.tabs = tabs;
   }
 }
 

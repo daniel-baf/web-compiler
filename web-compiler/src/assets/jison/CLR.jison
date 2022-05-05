@@ -37,10 +37,9 @@
 "Retorno"             return 'RETURN';
 "Detener"             return 'BREAK';
 "Continuar"           return 'CONTINUE';
-"Principal"           return 'MAIN';
 // custom functions for my own grammar use
 "DibujarTS"           return 'DRAW_TS';
-"DibujarATS"          return 'DRAW_ATS';
+"DibujarAST"          return 'DRAW_AST';
 "DibujarEXP"          return 'DRAW_EXP';
 // arythmetic
 "+"                   return '+';     // addition
@@ -50,13 +49,13 @@
 "%"                   return '%';     // module
 "^"                   return '^';     // exponent
 // relational
-"<"                   return '<';     // lower than
-">"                   return '>';     // higher than
-"~"                   return '~';     // uncertainty operator
 "=="                  return '==';    // equal
 "!="                  return '!=';    // not equal
 "<="                  return '<=';    // lower or equal than
 ">="                  return '>=';    // higher or equal than
+"<"                   return '<';     // lower than
+">"                   return '>';     // higher than
+"~"                   return '~';     // uncertainty operator
 "="                   return '=';     // assignment
 // inc operations
 "++"                  return '++';    // increment
@@ -69,6 +68,7 @@
 // concatenation
 ","                   return ',';     // comma
 ":"                   return ':';     // colon
+";"                   return ';';     // semi colon
 "("                   return '(';     // left parenthesis
 ")"                   return ')';     // right parenthesis
 "{"                   return '{';     // left curly bracket
@@ -106,135 +106,120 @@
 %start mp
 
 %%
+// Language grammar
 
-/* language grammar */
 mp
-    // : headers 'EOF'     
-    // : header 'EOF'
-    : stmt 'EOF'                            { finalprogram = $$; console.log($$); }
-    // | header stmt 'EOF'
+    : func_content 'EOF' { console.log($$); }
 ;
 
-stmt
-    // : stmt line 'CR'
-    // | stmt selection 'CR'
-    : stmt funcdef 'CR'                     { $$=new AstNode("statement", {left: $1, right: new AstNode('no-op')}); }
-    | stmt line 'CR'                        { $$=new AstNode("statement", {left: $1, right: $2}); }
-    | { $$ = new AstNode('no-op'); }
+func_content
+    : func_content line 'CR'
+    | line 'CR'
 ;
 
 line
-    : line var_assign           { $$ = $2; }
-    | var_type var_assign_list  { $$ = new AstNode("vars-assing", {left: $1, right: $2}); }
-    | line func_call            { $$=$1; }
-    | { $$ = new AstNode('no-op'); }
-    // return statement
-    // continue statement
-    // show function
-    // draw functions
+    : var_dec
+    | var_assign
+    | func_call
+    | show_stmt
+    | draw_stmt
+    | return_stmt
 ;
 
-// selection
-    // : if_stmt
-    // | while_stmt
-    // | for_stmt
-// ;
-
-var_assign_list
-    : var_assign_list ',' var_assign_custom         { $1.push($3); $$=$1; }
-    | var_assign_custom                             { $$=[$1]; }
-;
-
-var_assign_custom
-    : var_assign        { $$=$1; }
-    | id                { $$=$1; }
+var_dec
+    : var_type var_assign      { $$=new AstNode("var_dec", {left: $1, right: $2}); }
 ;
 
 var_assign
-    : id '=' expr       { $$=new AstNode("=", {left: $1, right: $3}); }
+    : id '=' expr       { $$=new AstNode('=', {left: $1, right: $3}); }
 ;
 
-funcdef
-    : var_type id '(' param_request ')' ':' // normal function
-    | var_type id '(' ')' ':' // no params function
-    | 'VOID' 'MAIN' '(' ')' ':' // main function
+show_stmt
+    : 'PRINT' '(' 'VAL_COM' ')'                     { $$=new AstNode('print', {value: $3.replaceAll("\"",""), params: null}); }
+    | 'PRINT' '(' 'VAL_COM' ',' parm_list ')'       { $$=new AstNode('print', {value: $3.replaceAll("\"",""), params: $5}); }
+;
+
+draw_stmt
+    : 'DRAW_AST' '(' id ')'                  { $$=new AstNode('draw_ast', {value: $3}); }
+    | 'DRAW_TS' '(' ')'                      { $$=new AstNode('draw_ts'); }
+    | 'DRAW_EXP' '(' expr ')'                { $$=new AstNode('draw_exp', {value: $3}); }
+;
+
+return_stmt
+    : 'RETURN' expr                          { $$=new AstNode('return', {value: $2}); }
+    | 'RETURN'                               { $$=new AstNode('return'); }
+;
+
+parm_list
+    : parm_list ',' expr    { $1.push(new AstNode("param", {left: $3})); $$=$1; }
+    | expr                  { $$=[new AstNode("param", {left: $1})]; }
 ;
 
 expr
-    : arythmetic_expr           { $$=$1; }
-    | op_expr                   { $$=$1; }
-    | compare_expr              { $$=$1; }
-    | logical_expr              { $$=$1; }
+    : arythmetic_expr       { $$=$1; }
+    | op_expr               { $$=$1; }
+    | compare_expr          { $$=$1; }
+    | logical_expr          { $$=$1; }
     // allowed values
-    | element                   { $$=$1; }
-    | func_call                 { $$=$1; }
+    | element               { $$=$1; }
+    | func_call             { $$=$1; }
 ;
 
 arythmetic_expr
-    : '-' expr %prec UMINUS         { $$ = new AstNode('uminus', {left: $2}); }
-    | expr '+' expr                 { $$ = new AstNode('+', {left: $1, right: $3}); }
-    | expr '-' expr                 { $$ = new AstNode('-', {left: $1, right: $3}); }
-    | expr '*' expr                 { $$ = new AstNode('*', {left: $1, right: $3}); }
-    | expr '/' expr                 { $$ = new AstNode('/', {left: $1, right: $3}); }
-    | expr '%' expr                 { $$ = new AstNode('%', {left: $1, right: $3}); }
-    | expr '^' expr                 { $$ = new AstNode('^', {left: $1, right: $3}); }
-    | '(' expr ')'                  { $$ = new AstNode('()',{left: $1}); }
+    : '-' expr %prec UMINUS         { $$ = new AstNode("uminus", {left: $2}); }
+    | expr '+' expr                 { $$ = new AstNode("+", {left: $1, right: $3}); }
+    | expr '-' expr                 { $$ = new AstNode("-", {left: $1, right: $3}); }
+    | expr '*' expr                 { $$ = new AstNode("*", {left: $1, right: $3}); }
+    | expr '/' expr                 { $$ = new AstNode("/", {left: $1, right: $3}); }
+    | expr '%' expr                 { $$ = new AstNode("%", {left: $1, right: $3}); }
+    | expr '^' expr                 { $$ = new AstNode("^", {left: $1, right: $3}); }
+    | '(' expr ')'                  { $$ = new AstNode("()", {left: $2}); }
 ;
 
 op_expr
-    : id '++'     { $$ = new AstNode('++', {left: $1}); }
-    | id '--'     { $$ = new AstNode('++', {left: $1}); }
+    : id '++'       { $$ = new AstNode("++", {left: $1}); }
+    | id '--'       { $$ = new AstNode("--", {left: $1}); }
 ;
 
 compare_expr
-    : expr '>' expr         { $$ = new AstNode('>', {left: $1, right: $3}); }          
-    | expr '<' expr         { $$ = new AstNode('<', {left: $1, right: $3}); }
-    | expr '==' expr        { $$ = new AstNode('==', {left: $1, right: $3}); }
-    | expr '!=' expr        { $$ = new AstNode('!=', {left: $1, right: $3}); }
-    | expr '<=' expr        { $$ = new AstNode('<=', {left: $1, right: $3}); }
-    | expr '>=' expr        { $$ = new AstNode('>=', {left: $1, right: $3}); }
+    : expr '>' expr         { $$ = new AstNode(">", {left: $1, right: $3}); }
+    | expr '<' expr         { $$ = new AstNode("<", {left: $1, right: $3}); }
+    | expr '==' expr        { $$ = new AstNode("==", {left: $1, right: $3}); }
+    | expr '!=' expr        { $$ = new AstNode("!=", {left: $1, right: $3}); }
+    | expr '<=' expr        { $$ = new AstNode("<=", {left: $1, right: $3}); }
+    | expr '>=' expr        { $$ = new AstNode(">=", {left: $1, right: $3}); }
 ;
 
 logical_expr
     // : expr '|&' expr
-    : expr '&&' expr        { $$ = new AstNode('&&', {left: $1, right: $3}); }
-    | expr '||' expr        { $$ = new AstNode('||', {left: $1, right: $3}); }
+    : expr '&&' expr        { $$ = new AstNode("&&", {left: $1, right: $3}); }
+    | expr '||' expr        { $$ = new AstNode("||", {left: $1, right: $3}); }
     | '!' expr              { $$ = new AstNode('!', {left: $2}); }
 ;
 
 func_call
-    : id '(' parm_list ')'            { $$ = new AstNode('func-call', {id:$1, params: $3.reverse()}); }
-    | id '(' ')'                      { $$ = new AstNode('func-call', {id:$1, params: null}); }
-;
-
-parm_list
-    : parm_list ',' expr            { $1.push($3); $$=$1; }
-    | expr                          { $$ = [$1]; }
-;
-
-param_request
-    : param_request ',' var_type id       { $1.push({id:$4, type:$3, value: null}); $$=$1;}
-    | var_type id                         { $$=[{id:$2, type:$1, value: null}]; }
+    : id '(' parm_list ')'      { $$=new AstNode("func_call", {left: $1, params: $3}); }
+    | id '(' ')'                { $$=new AstNode("func_call", {left: $1, params: null}); }
 ;
 
 var_type
-    : 'INT'             { $$ = new AstNode('var_type', {value: yytext}); }
-    | 'CHAR'            { $$ = new AstNode('var_type', {value: yytext}); }
-    | 'BOOL'            { $$ = new AstNode('var_type', {value: yytext}); }
-    | 'DOUBLE'          { $$ = new AstNode('var_type', {value: yytext}); }
-    | 'STRING'          { $$ = new AstNode('var_type', {value: yytext}); }
-    | 'VOID'            { $$ = new AstNode('var_type', {value: yytext}); }
+    : 'INT'             { $$ = 'INT'; }
+    | 'CHAR'            { $$ = 'CHAR'; }
+    | 'BOOL'            { $$ = 'BOOL'; }
+    | 'DOUBLE'          { $$ = 'DOUBLE'; }
+    | 'STRING'          { $$ = 'STRING'; }
+    | 'VOID'            { $$ = 'VOID'; }
 ;
 
 element
     : id                { $$=$1; }
-    | 'INT_VAL'         { $$ = new AstNode('INT_VAL', {value: Number(yytext)}); }        
-    | 'CHAR_VAL'        { $$ = new AstNode('CHAR_VAL', {value: yytext.replaceAll("'", "")}); }
-    | 'DOUBLE_VAL'      { $$ = new AstNode('DOUBLE_VAL', {value: Number(yytext)}); }
-    | 'VAL_COM'         { $$ = new AstNode('VAL_COM', {value: yytext.replaceAll("\"", "")}); }
-    | 'BOOL_VAL'        { $$ = new AstNode('ID', {value: yytext==="true"}); }
+    | 'INT_VAL'         { $$=new AstNode('INT_VAL', {value: Number(yytext)}); }
+    | 'DOUBLE_VAL'      { $$=new AstNode('DOUBLE_VAL', {value: Number(yytext)}); }
+    | 'CHAR_VAL'        { $$=new AstNode('CHAR_VAL', {value: yytext.replaceAll("'","")}); }
+    | 'VAL_COM'         { $$=new AstNode('VAL_COM', {value: yytext.replaceAll("\"","")}); }
+    | 'BOOL_VAL'        { $$=new AstNode('BOOL_VAL', {value: yytext=="true"}); }
 ;
 
 id
-    : 'ID'              { $$ = new AstNode('ID', {value: yytext}); }
+    : 'ID'      { $$=new AstNode('ID', {id: yytext, value:null}); }
 ;
