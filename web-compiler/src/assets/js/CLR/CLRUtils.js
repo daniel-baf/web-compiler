@@ -1,6 +1,4 @@
-var finalprogram;
-
-class AstNode {
+const AstNode = class AstNode {
   constructor(type, params) {
     this.type = type;
     for (var key in params) {
@@ -8,6 +6,19 @@ class AstNode {
     }
     return this;
   }
-}
+};
 
-function pushToAST(ast_node, index = 0) {}
+var CLRUtils = class CLRUtils {
+  constructor() {}
+
+  parse(input) {
+    let output = CLR.parse(input);
+    console.log(output);
+    return true;
+  }
+
+  printk() {
+    alert("k");
+  }
+
+};

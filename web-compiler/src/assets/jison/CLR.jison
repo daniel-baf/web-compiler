@@ -1,5 +1,3 @@
-// imports
-
 /* lexical grammar */
 %lex
 %x ML_COM
@@ -38,6 +36,7 @@
 "Retorno"             return 'RETURN';
 "Detener"             return 'BREAK';
 "Continuar"           return 'CONTINUE';
+"Principal"           return 'MAIN';
 // custom functions for my own grammar use
 "DibujarTS"           return 'DRAW_TS';
 "DibujarAST"          return 'DRAW_AST';
@@ -91,6 +90,15 @@
 
 /lex
 
+// imports
+%{
+    let errors_clr = [];
+
+    function clear_data() {
+        errors_clr = [];
+    }
+%}
+
 // syntax rules
 /* operator associations and precedence */
 %left '+', '-'
@@ -110,7 +118,35 @@
 // Language grammar
 
 mp
-    : func_content 'EOF' { console.log($$); }
+    : code_sec 'EOF' %{ 
+        var finalprogram = {errors: errors_clr, ast: $$};
+        clear_data();
+        return finalprogram;
+    %}
+;
+
+code_sec
+    : globals_var_dec funcs_sec     { printk();  let result = $1.concat($2); $$ = result; }
+    | funcs_sec                     { $$=$1; }
+;
+
+globals_var_dec
+    : globals_var_dec global_var    { $1.push($2); $$=$1; }
+    | global_var                    { $$ = [$1]; }
+;
+
+global_var
+    : var_dec 'CR'   { $$=$1; }
+;
+
+funcs_sec
+    : funcs_sec func_mdl      { if($2!=null) $1.push($2); $$=$1; }
+    | func_mdl                { $$=[]; if($1 != null) $$.push($1); }
+;
+
+func_mdl
+    : func_def 'CR' func_content        { $$ = new AstNode("function", {left: $1, right: $3}); }
+    | 'CR'                              { $$ = null; }
 ;
 
 func_content
@@ -120,13 +156,20 @@ func_content
 
 stmt_tbs
     : tabs stmt         { $$ = new AstNode("statement", {left: $2, tabs: $1}); }
-    | stmt              { $$ = new AstNode("statement", {left: $1, tabs: 0}); }
+    // | stmt              { $$ = new AstNode("statement", {left: $1, tabs: 0}); }
 ;
 
 stmt
-    : line 'CR'      { $$=$1; }
-    | selection 'CR' { $$=$1; }
-    | 'CR'           { $$=new AstNode("no-op"); }               // do not add to pile
+    : line 'CR'       { $$=$1; }
+    | selection 'CR'  { $$=$1; }
+    // | 'CR'            { $$=new AstNode("no-op"); }               // do not add to pile
+    // | error          { errors_clr.push({type: "sintactico", line: this._$.first_line, col: this._$.first_column, lexem: yytext}); }  // do not add to pile
+;
+
+func_def
+    : var_type id '(' param_request ')' ':'     { $$=new AstNode("func", {type: $1, name: $2, params: $4, tabs: 0}); }
+    | var_type id '(' ')' ':'                   { $$=new AstNode("func", {type: $1, name: $2, params: null, tabs: 0}); }
+    | 'VOID' 'MAIN' '(' ')' ':'                 { $$=new AstNode("main"); }
 ;
 
 line
@@ -136,6 +179,8 @@ line
     | show_stmt         { $$= $1; }
     | draw_stmt         { $$= $1; }
     | return_stmt       { $$= $1; }
+    | 'CONTINUE'        { $$= new AstNode("continue"); }
+    | 'BREAK'           { $$= new AstNode("break"); }
 ;
 
 selection
@@ -184,6 +229,11 @@ draw_stmt
 return_stmt
     : 'RETURN' expr                          { $$=new AstNode('return', {value: $2}); }
     | 'RETURN'                               { $$=new AstNode('return'); }
+;
+
+param_request
+    : param_request ',' var_type id     { $1.push(new AstNode("var_dec", {left: $3, right: $4})); $$=$1; }
+    | var_type id                       { $$ = [new AstNode("var_dec", {left: $1, right: $2})]; }
 ;
 
 parm_list

@@ -30,8 +30,8 @@ export class IdeComponent implements OnInit {
     this.addTab([
       new TabFile(
         'test.clr',
-        '\tBoolean valid = !(2 > 3)\n\tSi(valid):\n\t\tMostrar("hola")\n\tSino:\n\t\tMostrar("adios") ' + 
-        '    \'"hola pato\'"\n\tMostrar("hola h1")\'" adios pato 2 \'"\nPara(Int k = 1; k< 12; ++):\n')]);
+        'Void Principal():\n\tBoolean valid = !(2 > 3)\n\tSi(valid):\n\t\tMostrar("hola")\n\tSino:\n\t\tMostrar("adios") ' + 
+        '    \'"hola pato\'"\n\tPara(Int k = 1; k< 12; ++):\n\t\tMostrar("hola h1")\'" adios pato 2 \'"\n')]);
   }
 
   // add a tab to the editable files
