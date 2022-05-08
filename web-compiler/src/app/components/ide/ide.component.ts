@@ -3,7 +3,7 @@ import { TabFile } from 'src/app/models/tab-file.model';
 import { CLRManagerService } from 'src/app/services/CLR/CLRManager.service';
 import { UtilsService } from 'src/app/services/Utils.service';
 import { ConsoleLogComponent } from './console-log/console-log.component';
-import { LoadScriptsService } from 'src/app/services/load-scripts.service';
+// import { LoadScriptsService } from 'src/app/services/load-scripts.service';
 
 @Component({
   selector: 'app-ide',
@@ -18,11 +18,10 @@ export class IdeComponent implements OnInit {
 
   constructor(
     private _utils: UtilsService,
-    private CLRManager: CLRManagerService,
-    private _scriptLoader: LoadScriptsService
+    private CLRManager: CLRManagerService // private _scriptLoader: LoadScriptsService
   ) {
     // load scripts for parser
-    _scriptLoader.load_scripts(['CLR/CLRUtils', 'CLR/CLR']);
+    // _scriptLoader.load_scripts(['CLR/CLRUtils', 'CLR/CLR']);
   }
 
   ngOnInit(): void {
@@ -30,8 +29,10 @@ export class IdeComponent implements OnInit {
     this.addTab([
       new TabFile(
         'test.clr',
-        'Void Principal():\n\tBoolean valid = !(2 > 3)\n\tSi(valid):\n\t\tMostrar("hola")\n\tSino:\n\t\tMostrar("adios") ' + 
-        '    \'"hola pato\'"\n\tPara(Int k = 1; k< 12; ++):\n\t\tMostrar("hola h1")\'" adios pato 2 \'"\n')]);
+        'Void Principal():\n\tBoolean valid = !(2 > 3)\n\tSi(valid):\n\t\tMostrar("hola")\n\tSino:\n\t\tMostrar("adios") ' +
+          '    \'"hola pato\'"\n\tPara(Int k = 1; k< 12; ++):\n\t\tMostrar("hola h1")\'" adios pato 2 \'"\n'
+      ),
+    ]);
   }
 
   // add a tab to the editable files

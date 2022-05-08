@@ -1,3 +1,11 @@
+// imports
+%{
+    const { CLRUtils } = require('src/app/models/CLR/clr-utils.model.ts');
+    const { AstNode } = require('src/app/models/tree/ast-node.model.ts');
+    let clr_utils = new CLRUtils();
+
+%}
+
 /* lexical grammar */
 %lex
 %x ML_COM
@@ -90,15 +98,6 @@
 
 /lex
 
-// imports
-%{
-    let errors_clr = [];
-
-    function clear_data() {
-        errors_clr = [];
-    }
-%}
-
 // syntax rules
 /* operator associations and precedence */
 %left '+', '-'
@@ -118,15 +117,17 @@
 // Language grammar
 
 mp
-    : code_sec 'EOF' %{ 
-        var finalprogram = {errors: errors_clr, ast: $$};
-        clear_data();
-        return finalprogram;
-    %}
+    : code_sec 'EOF'
+    { 
+        var backup = clr_utils;
+        console.log($$);
+        clr_utils = new CLRUtils();
+        return backup;
+    }
 ;
 
 code_sec
-    : globals_var_dec funcs_sec     { printk();  let result = $1.concat($2); $$ = result; }
+    : globals_var_dec funcs_sec     { let result = $1.concat($2); $$ = result; }
     | funcs_sec                     { $$=$1; }
 ;
 
@@ -145,7 +146,7 @@ funcs_sec
 ;
 
 func_mdl
-    : func_def 'CR' func_content        { $$ = new AstNode("function", {left: $1, right: $3}); }
+    : func_def 'CR' func_content        { $$ = new AstNode("function", [$1, $3]); }
     | 'CR'                              { $$ = null; }
 ;
 
@@ -155,7 +156,7 @@ func_content
 ;
 
 stmt_tbs
-    : tabs stmt         { $$ = new AstNode("statement", {left: $2, tabs: $1}); }
+    : tabs stmt         { $$ = new AstNode("statement", [$2], $1); }
     // | stmt              { $$ = new AstNode("statement", {left: $1, tabs: 0}); }
 ;
 
@@ -163,12 +164,12 @@ stmt
     : line 'CR'       { $$=$1; }
     | selection 'CR'  { $$=$1; }
     // | 'CR'            { $$=new AstNode("no-op"); }               // do not add to pile
-    // | error          { errors_clr.push({type: "sintactico", line: this._$.first_line, col: this._$.first_column, lexem: yytext}); }  // do not add to pile
+    | error 'CR'        { clr_utils.add_error(this._$.first_line, this._$.first_column, "Sintactico", yytext); }
 ;
 
 func_def
-    : var_type id '(' param_request ')' ':'     { $$=new AstNode("func", {type: $1, name: $2, params: $4, tabs: 0}); }
-    | var_type id '(' ')' ':'                   { $$=new AstNode("func", {type: $1, name: $2, params: null, tabs: 0}); }
+    : var_type id '(' param_request ')' ':'     { $$=new AstNode("func", [$1, $2, $4]); }
+    | var_type id '(' ')' ':'                   { $$=new AstNode("func", [$1, $2, null]); }
     | 'VOID' 'MAIN' '(' ')' ':'                 { $$=new AstNode("main"); }
 ;
 
@@ -190,55 +191,55 @@ selection
 ;
 
 if_stmt
-    : 'IF' '(' expr ')' ':'         { $$= new AstNode("if", {left: $3}); }
+    : 'IF' '(' expr ')' ':'         { $$= new AstNode("if", [$3]); }
     | 'ELSE' ':'                    { $$= new AstNode("else"); }
-    | 'ELSE' 'IF' '(' expr ')' ':'  { $$= new AstNode("elseif", {left: $4}); }
+    | 'ELSE' 'IF' '(' expr ')' ':'  { $$= new AstNode("elseif", [$4]); }
 ;
 
 for_stmt
     : 'FOR' '(' 'INT' var_assign ';' expr ';' op_sym  ')' ':'     
         {
-            var vd = new AstNode("var_dec", { left: $3, right: $4});
-            $$= new AstNode("for", {left: vd, expr: $6, inc: $8}); 
+            var vd = new AstNode("var_dec", [$3, $4]);
+            $$= new AstNode("for", [vd, $6, $8]); 
         }
 ;
 
 while_stmt
-    : 'WHILE' '(' expr ')' ':'      { $$= new AstNode("while", {left: $3}); }    
+    : 'WHILE' '(' expr ')' ':'      { $$= new AstNode("while", [$3]); }    
 ;
 
 var_dec
-    : var_type var_assign      { $$=new AstNode("var_dec", {left: $1, right: $2}); }
+    : var_type var_assign      { $$=new AstNode("var_dec", [$1, $2]); }
 ;
 
 var_assign
-    : id '=' expr       { $$=new AstNode('=', {left: $1, right: $3}); }
+    : id '=' expr       { $$=new AstNode('=', [$1, $3]); }
 ;
 
 show_stmt
-    : 'PRINT' '(' 'VAL_COM' ')'                     { $$=new AstNode('print', {value: $3.replaceAll("\"","")}); }
-    | 'PRINT' '(' 'VAL_COM' ',' parm_list ')'       { $$=new AstNode('print', {value: $3.replaceAll("\"",""), params: $5}); }
+    : 'PRINT' '(' 'VAL_COM' ')'                     { $$=new AstNode('print', [$3.replaceAll("\"",""), null]); }
+    | 'PRINT' '(' 'VAL_COM' ',' parm_list ')'       { $$=new AstNode('print', [$3.replaceAll("\"",""), $5]); }
 ;
 
 draw_stmt
-    : 'DRAW_AST' '(' id ')'                  { $$=new AstNode('draw_ast', {value: $3}); }
+    : 'DRAW_AST' '(' id ')'                  { $$=new AstNode('draw_ast', [$3]); }
     | 'DRAW_TS' '(' ')'                      { $$=new AstNode('draw_ts'); }
-    | 'DRAW_EXP' '(' expr ')'                { $$=new AstNode('draw_exp', {value: $3}); }
+    | 'DRAW_EXP' '(' expr ')'                { $$=new AstNode('draw_exp', [$3]); }
 ;
 
 return_stmt
-    : 'RETURN' expr                          { $$=new AstNode('return', {value: $2}); }
+    : 'RETURN' expr                          { $$=new AstNode('return', [$2]); }
     | 'RETURN'                               { $$=new AstNode('return'); }
 ;
 
 param_request
-    : param_request ',' var_type id     { $1.push(new AstNode("var_dec", {left: $3, right: $4})); $$=$1; }
-    | var_type id                       { $$ = [new AstNode("var_dec", {left: $1, right: $2})]; }
+    : param_request ',' var_type id     { $1.push(new AstNode("var_dec", [$3, $4])); $$=$1; }
+    | var_type id                       { $$ = [new AstNode("var_dec", [$1, $2])]; }
 ;
 
 parm_list
-    : parm_list ',' expr    { $1.push(new AstNode("param", {left: $3})); $$=$1; }
-    | expr                  { $$=[new AstNode("param", {left: $1})]; }
+    : parm_list ',' expr    { $1.push(new AstNode("param", [$3])); $$=$1; }
+    | expr                  { $$=[new AstNode("param", [$1])]; }
 ;
 
 expr
@@ -252,18 +253,18 @@ expr
 ;
 
 arythmetic_expr
-    : '-' expr %prec UMINUS         { $$ = new AstNode("uminus", {left: $2}); }
-    | expr '+' expr                 { $$ = new AstNode("+", {left: $1, right: $3}); }
-    | expr '-' expr                 { $$ = new AstNode("-", {left: $1, right: $3}); }
-    | expr '*' expr                 { $$ = new AstNode("*", {left: $1, right: $3}); }
-    | expr '/' expr                 { $$ = new AstNode("/", {left: $1, right: $3}); }
-    | expr '%' expr                 { $$ = new AstNode("%", {left: $1, right: $3}); }
-    | expr '^' expr                 { $$ = new AstNode("^", {left: $1, right: $3}); }
-    | '(' expr ')'                  { $$ = new AstNode("()", {left: $2}); }
+    : '-' expr %prec UMINUS         { $$ = new AstNode("uminus", [$2]); }
+    | expr '+' expr                 { $$ = new AstNode("+", [$1, $3]); }
+    | expr '-' expr                 { $$ = new AstNode("-", [$1, $3]); }
+    | expr '*' expr                 { $$ = new AstNode("*", [$1, $3]); }
+    | expr '/' expr                 { $$ = new AstNode("/", [$1, $3]); }
+    | expr '%' expr                 { $$ = new AstNode("%", [$1, $3]); }
+    | expr '^' expr                 { $$ = new AstNode("^", [$1, $3]); }
+    | '(' expr ')'                  { $$ = new AstNode("()", [$2]); }
 ;
 
 op_expr
-    : id op_sym       { $$ = new AstNode($2, {left: $1}); }
+    : id op_sym       { $$ = new AstNode($2, [$1]); }
 ;
 
 op_sym
@@ -272,24 +273,24 @@ op_sym
 ;
 
 compare_expr
-    : expr '>' expr         { $$ = new AstNode(">", {left: $1, right: $3}); }
-    | expr '<' expr         { $$ = new AstNode("<", {left: $1, right: $3}); }
-    | expr '==' expr        { $$ = new AstNode("==", {left: $1, right: $3}); }
-    | expr '!=' expr        { $$ = new AstNode("!=", {left: $1, right: $3}); }
-    | expr '<=' expr        { $$ = new AstNode("<=", {left: $1, right: $3}); }
-    | expr '>=' expr        { $$ = new AstNode(">=", {left: $1, right: $3}); }
+    : expr '>' expr         { $$ = new AstNode(">", [$1, $3]); }
+    | expr '<' expr         { $$ = new AstNode("<", [$1, $3]); }
+    | expr '==' expr        { $$ = new AstNode("==", [$1, $3]); }
+    | expr '!=' expr        { $$ = new AstNode("!=", [$1, $3]); }
+    | expr '<=' expr        { $$ = new AstNode("<=", [$1, $3]); }
+    | expr '>=' expr        { $$ = new AstNode(">=", [$1, $3]); }
 ;
 
 logical_expr
     // : expr '|&' expr
-    : expr '&&' expr        { $$ = new AstNode("&&", {left: $1, right: $3}); }
-    | expr '||' expr        { $$ = new AstNode("||", {left: $1, right: $3}); }
-    | '!' expr              { $$ = new AstNode('!', {left: $2}); }
+    : expr '&&' expr        { $$ = new AstNode("&&", [$1, $3]); }
+    | expr '||' expr        { $$ = new AstNode("||", [$1, $3]); }
+    | '!' expr              { $$ = new AstNode('!', [$2]); }
 ;
 
 func_call
-    : id '(' parm_list ')'      { $$=new AstNode("func_call", {left: $1, params: $3}); }
-    | id '(' ')'                { $$=new AstNode("func_call", {left: $1}); }
+    : id '(' parm_list ')'      { $$=new AstNode("func_call", [$1, $3]); }
+    | id '(' ')'                { $$=new AstNode("func_call", [$1, null]); }
 ;
 
 var_type
@@ -308,13 +309,13 @@ tabs
 
 element
     : id                { $$=$1; }
-    | 'INT_VAL'         { $$=new AstNode('INT_VAL', {value: Number(yytext)}); }
-    | 'DOUBLE_VAL'      { $$=new AstNode('DOUBLE_VAL', {value: Number(yytext)}); }
-    | 'CHAR_VAL'        { $$=new AstNode('CHAR_VAL', {value: yytext.replaceAll("'","")}); }
-    | 'VAL_COM'         { $$=new AstNode('VAL_COM', {value: yytext.replaceAll("\"","")}); }
-    | 'BOOL_VAL'        { $$=new AstNode('BOOL_VAL', {value: yytext=="true"}); }
+    | 'INT_VAL'         { $$=new AstNode('INT_VAL', [$1]); }
+    | 'DOUBLE_VAL'      { $$=new AstNode('DOUBLE_VAL', [Number(yytext)]); }
+    | 'CHAR_VAL'        { $$=new AstNode('CHAR_VAL', [yytext.replaceAll("'","")]); }
+    | 'VAL_COM'         { $$=new AstNode('VAL_COM', [yytext.replaceAll("\"","")]); }
+    | 'BOOL_VAL'        { $$=new AstNode('BOOL_VAL', [yytext=="true"]); }
 ;
 
 id
-    : 'ID'      { $$=new AstNode('ID', {id: yytext}); }
+    : 'ID'      { $$=new AstNode('ID', [$1]); }
 ;
