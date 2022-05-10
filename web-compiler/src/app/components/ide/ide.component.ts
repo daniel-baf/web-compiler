@@ -29,10 +29,21 @@ export class IdeComponent implements OnInit {
     this.addTab([
       new TabFile(
         'test.clr',
-        'Void Principal():\n\tBoolean valid = !(2 > 3)\n\tSi(valid):\n\t\tMostrar("hola")\n\tSino:\n\t\tMostrar("adios") ' +
-          '    \'"hola pato\'"\n\tPara(Int k = 1; k< 12; ++):\n\t\tMostrar("hola h1")\'" adios pato 2 \'"\n'
+        'Boolean glb_bool\nInt glbInt = 2+ (1 / 2)\n\nInt get_max(Int n1, Int n2):\n\tSi(n1 > n2):\n\t\tRetorno n1\n\tSino Si(n2 > n1):\n\t\tRetorno n2\n\tSino:\n\n\nVoid func_no_data():\n\n' +
+          'Void pring_msg(String msg):\n\tMostrar("Mensaje: {1}",msg)\n\nString print_msg_mas(Int n1, Int n2):\n\tInt result = get_max(n1,n2)\n\t' +
+          'String msgRst = "El resultado de sumar " + n1 + " con " + n2 + " es: " + get_max(n1,n2)\n\tpring_msg(msgRst)\n\n' +
+          "Void Principal():\n\tBoolean valid = !(2 > 3)\n\tSi(valid):\n\tChar c_char = 'b'\n\tSi ( c_char != 'z'):\n\t\tInt tmp1 = 2 * 3 /1\n" +
+          '\t\tInt lck = tmp1 % 2\n\t\tprint_msg_mas(tmp1, lck)\n\tSino:\n\t\tPara(Int k = 1; k< 12; ++):\n\t\t\tMostrar("hola h1")\'" adios pato 2 \'"\n' +
+          '\t\tMostrar("adios")   \'"hola pato\'"\n\n\n'
       ),
     ]);
+
+    // this.addTab([
+    //   new TabFile(
+    //     'test.clr',
+    //     'Boolean glb_bool\nInt glbInt = 2+ (1 / 2)\n\nInt get_max(Int n1, Int n2):\n\tSi(n1 > n2):\n\t\tRetorno n1\n\tSino Si(n2 > n1):\n\t\tRetorno n2\n\tSino:\n'
+    //   ),
+    // ]);
   }
 
   // add a tab to the editable files

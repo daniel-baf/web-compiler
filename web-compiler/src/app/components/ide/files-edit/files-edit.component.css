@@ -3,9 +3,10 @@ textarea {
   background-attachment: local;
   background-repeat: no-repeat;
   padding-left: 35px;
-  padding-top: 10px;
+  padding-top: 0px;
   border-color: #ccc;
   width: 83vw;
+  white-space: nowrap;
   resize: none;
-  tab-size: 4;
+  /* tab-size: 5; */
 }

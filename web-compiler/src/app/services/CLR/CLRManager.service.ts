@@ -13,8 +13,8 @@ export class CLRManagerService {
   execAnalysis(data: string) {
     // let grm_parser = new Parser(data);
     let output: CLRUtils = Parser.parse(data);
+    console.log('final result');
     console.log(output);
-
     // let clrUtils = new CLRUtils();
     // let msg = '';
     // if (clrUtils.parse(data)) {

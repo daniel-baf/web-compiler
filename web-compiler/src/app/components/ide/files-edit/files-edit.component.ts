@@ -16,8 +16,20 @@ export class FilesEditComponent implements OnInit {
   checkTab(e: any) {
     if (e.keyCode === 9) {
       e.preventDefault();
-      this.activeTab.tabData += '\t';
-      $('#console').focus();
+      let _console = $('#console');
+      let _cursor_pos = _console.prop('selectionStart');
+      this.activeTab.tabData =
+        this.activeTab.tabData.substring(0, _cursor_pos) +
+        '\t' +
+        this.activeTab.tabData.substring(
+          _cursor_pos,
+          this.activeTab.tabData.length
+        );
+      _console.focus();
     }
+  }
+
+  setCursor(pos: any, _console: any) {
+    // TODO fix, set cursor position
   }
 }
