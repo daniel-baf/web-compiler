@@ -26,10 +26,11 @@ export class FilesEditComponent implements OnInit {
           this.activeTab.tabData.length
         );
       _console.focus();
+      this.setCursor(_cursor_pos + 1, _console);
     }
   }
 
-  setCursor(pos: any, _console: any) {
-    // TODO fix, set cursor position
+  setCursor(pos: number, _console: any) {
+    alert('set cur ' + pos);
   }
 }

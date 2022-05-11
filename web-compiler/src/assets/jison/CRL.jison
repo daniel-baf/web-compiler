@@ -1,9 +1,9 @@
 // imports
 %{
-    const { CLRUtils } = require('src/app/models/CLR/clr-utils.model.ts');
+    const { CRLUtils } = require('src/app/models/CRL/crl-utils.model.ts');
     const { AstNode } = require('src/app/models/tree/ast-node.model.ts');
     const { EPVN } = require('src/app/models/tree/ast-node-expected.model.ts')
-    let clr_utils = new CLRUtils();
+    let crl_utils = new CRLUtils();
 %}
 
 /* lexical grammar */
@@ -12,15 +12,15 @@
 %s L_COM
 %%
 
-// multi line comment 
-"'\""           { this.pushState('ML_COM'); }
-<ML_COM>"'\""   { this.pushState('INITIAL'); }
-<ML_COM>\n      { ; } // new comment line for long commetn
-<ML_COM>.       { ; } // end long comment
 // line comment !! this is a comment
 "!!"            { this.pushState('L_COM'); }
 <L_COM>\n       { this.pushState('INITIAL'); }
 <L_COM>.        { ; } // end of line comment
+// multi line comment '" long ... comment '"
+"'\""           { this.pushState('ML_COM'); }
+<ML_COM>"'\""   { this.pushState('INITIAL'); }
+<ML_COM>\n      { ; } // new comment line for long commetn
+<ML_COM>.       { ; } // end long comment
 // ignore whitespace && comments
 [ \r]+       { /*ignore*/; }
 // var value
@@ -86,7 +86,7 @@
 [0-9]+\b              return 'INT_VAL';    // number: 1
 "'"(.)"'"             return 'CHAR_VAL';   // char value: 'a'
 '"'[^'"'\n\r]*'"'     return 'VAL_COM';    // value into comillas: "hi"
-[a-zA-Z][a-zA-Z0-9_]*".clr" return "CLR_FILE";
+[a-zA-Z][a-zA-Z0-9_]*".crl" return "CRL_FILE";
 [a-zA-Z][a-zA-Z0-9_]* return 'ID';      // identifier: myId
 // split line
 \n                    return 'CR';    // new line
@@ -94,7 +94,7 @@
 
 <<EOF>>               return 'EOF';   // end of file
 // lexical errors
-.                     return "INVALID_TKN";  // error, not valid char token
+.                     {crl_utils.add_error(yylineno + 1, yylloc.first_column + 1, "Lexico", yytext); return "INVALID_TKN";}  // error, not valid char token
 
 /lex
 
@@ -119,8 +119,8 @@
 mp
     : body 'EOF'
     { 
-        var backup = clr_utils;
-        clr_utils = new CLRUtils();
+        var backup = crl_utils;
+        crl_utils = new CRLUtils();
         return backup;
     }
 ;
@@ -131,10 +131,11 @@ body
 ;
 
 body_sec
-    : global_var        { clr_utils.push_pipe($1); }
-    | func_mdl          { clr_utils.push_pipe($1); }
-    | stmt_tbs          { clr_utils.push_pipe($1); }
+    : global_var        { crl_utils.push_pipe($1, this._$.first_line); }
+    | func_mdl          { crl_utils.push_pipe($1, this._$.first_line); }
+    | stmt_tbs          { crl_utils.push_pipe($1, this._$.first_line); }
     | 'CR'
+    | error 'CR'      { crl_utils.add_error(this._$.first_line, this._$.first_column, "Sintactico", yytext); }
 ;
 
 global_var
@@ -152,7 +153,6 @@ stmt_tbs
 stmt
     : line 'CR'       { $$=[$1, EPVN.stmt_line]; }
     | selection 'CR'  { $$=[$1, EPVN.stmt_selection]; }
-    | error 'CR'      { clr_utils.add_error(this._$.first_line, this._$.first_column, "Sintactico", yytext); }
 ;
 
 func_def

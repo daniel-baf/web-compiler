@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { TabFile } from 'src/app/models/tab-file.model';
-import { CLRManagerService } from 'src/app/services/CLR/CLRManager.service';
+import { CRLManagerService } from 'src/app/services/CRL/CRLManager.service';
 import { UtilsService } from 'src/app/services/Utils.service';
 import { ConsoleLogComponent } from './console-log/console-log.component';
 // import { LoadScriptsService } from 'src/app/services/load-scripts.service';
@@ -11,39 +11,27 @@ import { ConsoleLogComponent } from './console-log/console-log.component';
   styleUrls: ['./ide.component.css'],
 })
 export class IdeComponent implements OnInit {
-  activeFile = 0;
-  tabFiles: TabFile[] = [];
+  public activeFile = 0;
+  public tabFiles: TabFile[] = [];
+  private _analysis_errs: Array<Object>;
   @ViewChild(ConsoleLogComponent) consoleL: ConsoleLogComponent =
     new ConsoleLogComponent();
 
   constructor(
     private _utils: UtilsService,
-    private CLRManager: CLRManagerService // private _scriptLoader: LoadScriptsService
+    private CRLManager: CRLManagerService
   ) {
-    // load scripts for parser
-    // _scriptLoader.load_scripts(['CLR/CLRUtils', 'CLR/CLR']);
+    this._analysis_errs = new Array<Object>();
   }
 
   ngOnInit(): void {
     // create temp file to test
     this.addTab([
       new TabFile(
-        'test.clr',
-        'Boolean glb_bool\nInt glbInt = 2+ (1 / 2)\n\nInt get_max(Int n1, Int n2):\n\tSi(n1 > n2):\n\t\tRetorno n1\n\tSino Si(n2 > n1):\n\t\tRetorno n2\n\tSino:\n\n\nVoid func_no_data():\n\n' +
-          'Void pring_msg(String msg):\n\tMostrar("Mensaje: {1}",msg)\n\nString print_msg_mas(Int n1, Int n2):\n\tInt result = get_max(n1,n2)\n\t' +
-          'String msgRst = "El resultado de sumar " + n1 + " con " + n2 + " es: " + get_max(n1,n2)\n\tpring_msg(msgRst)\n\n' +
-          "Void Principal():\n\tBoolean valid = !(2 > 3)\n\tSi(valid):\n\tChar c_char = 'b'\n\tSi ( c_char != 'z'):\n\t\tInt tmp1 = 2 * 3 /1\n" +
-          '\t\tInt lck = tmp1 % 2\n\t\tprint_msg_mas(tmp1, lck)\n\tSino:\n\t\tPara(Int k = 1; k< 12; ++):\n\t\t\tMostrar("hola h1")\'" adios pato 2 \'"\n' +
-          '\t\tMostrar("adios")   \'"hola pato\'"\n\n\n'
+        'test.crl',
+        'Boolean glb_bool\nInt glbInt = 2+ (1 / 2)\n\nInt get_max(Int n1, Int n2):\n\tSi(n1 > n2):\n\t\tRetorno n1\n\tSino Si(n2 > n1):\n\t\tRetorno n2\n\tSino:\n\n\nVoid func_no_data():\n\tDouble k = -12\n\tMientras ( k < 2 ^ 3 - 10):\n\t\tPara(Int k1 = 0; k < 2; ++):\n\t\t\tSi ( k %2 == 0):\n\t\t\t\tMostrar("Es par")\n\t\t\tSino:\n\t\t\t\tMostrar("Es impar")\n\t\tMostrar("Fin de para")\n\tMostrar("Fin de mientras")\n\nVoid pring_msg(String msg):\n\tMostrar("Mensaje: {1}",msg)\n\nString print_msg_mas(Int n1, Int n2):\n\tInt result = get_max(n1,n2)\n\tString msgRst = "El resultado de sumar " + n1 + " con " + n2 + " es: " + get_max(n1,n2)\n\tpring_msg(msgRst)\n\nVoid Principal():\n\tBoolean valid = !(2 > 3)\n\tSi(valid):\n\tChar c_char = \'b\'\n\tSi ( c_char != \'z\'):\n\t\tInt tmp1 = 2 * 3 /1\n\t\tInt lck = tmp1 % 2\n\t\tprint_msg_mas(tmp1, lck)\n\tSino:\n\t\tPara(Int k = 1; k< 12; ++):\n\t\t\tMostrar("hola h1")\'" adios pato 2 \'"\n\t\tMostrar("adios")   \'"hola pato\'"\n\tDibujarAST(func_no_data)\n\tDibujarEXP(2+1/3^(-1+2))\n\tMostrar("FIN DE MAIN")\n'
       ),
     ]);
-
-    // this.addTab([
-    //   new TabFile(
-    //     'test.clr',
-    //     'Boolean glb_bool\nInt glbInt = 2+ (1 / 2)\n\nInt get_max(Int n1, Int n2):\n\tSi(n1 > n2):\n\t\tRetorno n1\n\tSino Si(n2 > n1):\n\t\tRetorno n2\n\tSino:\n'
-    //   ),
-    // ]);
   }
 
   // add a tab to the editable files
@@ -80,7 +68,7 @@ export class IdeComponent implements OnInit {
   compileCode() {
     this.consoleL.clear();
     try {
-      let toPrint = this.CLRManager.execAnalysis(
+      let toPrint = this.CRLManager.execAnalysis(
         this.tabFiles[this.activeFile].tabData
       );
       this.consoleL.print(toPrint);
@@ -106,7 +94,10 @@ export class IdeComponent implements OnInit {
       case 'compile':
         this.compileCode();
         break;
+      case 'get-reports':
+        break;
       default:
+        alert('invalid action');
         break;
     }
   }

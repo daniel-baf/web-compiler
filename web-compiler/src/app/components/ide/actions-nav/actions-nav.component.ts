@@ -32,7 +32,7 @@ export class ActionsNavComponent implements OnInit {
     } else {
       // send creation
       this.showError = false;
-      this.tabEmiter.emit([new TabFile(`${this.newTabName.trim()}.clr`, '')]);
+      this.tabEmiter.emit([new TabFile(`${this.newTabName.trim()}.crl`, '')]);
       this.newTabName = '';
     }
   }
@@ -53,18 +53,11 @@ export class ActionsNavComponent implements OnInit {
     this.tabEmiter.emit(newTabs);
   }
 
-  downloadFIle() {
-    this.voidEmitter.emit('download');
-  }
-
-  closeTab(e: any) {
-    e.preventDefault();
-    this.voidEmitter.emit('close-tab');
-  }
-
-  compileCode(e: any) {
-    e.preventDefault();
-    this.voidEmitter.emit('compile');
+  voidEvent(e: any, str: string) {
+    if (str != 'download') {
+      e.preventDefault();
+    }
+    this.voidEmitter.emit(str);
   }
 
   private showErrorMessage(message: string): void {

@@ -1,8 +1,8 @@
 echo "LEXER AND PARSER (.jison file)"
 echo "  Removing old files"
-rm -rf CLR.js
+rm -rf CRL.js
 echo "  Compiling"
-jison CLR.jison
+jison CRL.jison
 echo "  Moving js file to new directory"
-mv CLR.js ../../scripts/
+mv CRL.js ../../scripts/
 echo "      Done, js file created"

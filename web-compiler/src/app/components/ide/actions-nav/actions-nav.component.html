@@ -1,7 +1,7 @@
 <!-- Nav tabs -->
 <ul class="nav nav-tabs" id="navId">
   <li class="nav-item">
-    <a class="nav-link active" href="">IDE CLR</a>
+    <a class="nav-link active" href="">IDE CRL</a>
   </li>
   <li class="nav-item dropdown">
     <a
@@ -31,16 +31,26 @@
         >Abrir</a
       >
       <div class="dropdown-divider"></div>
-      <a class="dropdown-item" href="#" role="button" (click)="downloadFIle()"
+      <a
+        class="dropdown-item"
+        href="#"
+        role="button"
+        (click)="voidEvent($event, 'download')"
         >Descargar</a
       >
-      <a class="dropdown-item" href="#" role="button" (click)="closeTab($event)"
+      <a
+        class="dropdown-item"
+        href="#"
+        role="button"
+        (click)="voidEvent($event, 'close-tab')"
         >Cerrar</a
       >
     </div>
   </li>
   <li class="nav-item">
-    <a href="#" class="nav-link" (click)="compileCode($event)">Ejecutar</a>
+    <a href="#" class="nav-link" (click)="voidEvent($event, 'compile')"
+      >Ejecutar</a
+    >
   </li>
   <li class="nav-item">
     <a href="#" class="nav-link disabled">Disabled</a>
@@ -56,7 +66,12 @@
       >Acciones</a
     >
     <div class="dropdown-menu">
-      <a class="dropdown-item" href="#get-reports">Ver reportes</a>
+      <a
+        class="dropdown-item"
+        href="#get-reports"
+        (click)="voidEvent($event, 'get-reports')"
+        >Ver reportes</a
+      >
       <a class="dropdown-item" href="#img-galery">Coleccion de imagenes</a>
       <div class="dropdown-divider"></div>
       <a class="dropdown-item" href="#toggle-console-view"
@@ -95,7 +110,7 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label for="newFileName">Archivo (.clr)</label>
+          <label for="newFileName">Archivo (.crl)</label>
           <input
             type="text"
             class="form-control"
@@ -157,12 +172,12 @@
             id=""
             placeholder="Seleccionar"
             aria-describedby="fileHelpId"
-            accept=".clr"
+            accept=".crl"
             multiple="multiple"
             (change)="preSaveFiles($event)"
           />
           <small id="fileHelpId" class="form-text text-muted"
-            >Selecciona los archivos .clr</small
+            >Selecciona los archivos .crl</small
           >
         </div>
       </div>

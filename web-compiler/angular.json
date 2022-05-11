@@ -32,7 +32,7 @@
               "node_modules/popper.js/dist/umd/popper.min.js",
               "node_modules/bootstrap/dist/js/bootstrap.min.js"
             ],
-            "allowedCommonJsDependencies": ["src/scripts/CLR.js"]
+            "allowedCommonJsDependencies": ["src/scripts/CRL.js"]
           },
           "configurations": {
             "production": {
