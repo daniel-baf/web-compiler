@@ -1,9 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { IdeComponent } from './components/ide/ide.component';
+import { ReportsComponent } from './components/rst/reports/reports.component';
 
-const routes: Routes = [{ path: '', component: IdeComponent }];
-
+const routes: Routes = [
+  {
+    path: '',
+    component: IdeComponent,
+    children: [{ path: 'reports', component: ReportsComponent }],
+  },
+];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],

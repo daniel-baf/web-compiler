@@ -54,7 +54,7 @@ export class ActionsNavComponent implements OnInit {
   }
 
   voidEvent(e: any, str: string) {
-    if (str != 'download') {
+    if (!(str === 'download' || str === 'get-reports')) {
       e.preventDefault();
     }
     this.voidEmitter.emit(str);

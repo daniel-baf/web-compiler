@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { AnalysisError } from 'src/app/models/CRL/anlys_err.model';
 import { TabFile } from 'src/app/models/tab-file.model';
 import { CRLManagerService } from 'src/app/services/CRL/CRLManager.service';
 import { UtilsService } from 'src/app/services/Utils.service';
@@ -13,7 +14,8 @@ import { ConsoleLogComponent } from './console-log/console-log.component';
 export class IdeComponent implements OnInit {
   public activeFile = 0;
   public tabFiles: TabFile[] = [];
-  private _analysis_errs: Array<Object>;
+  public _errors: Array<AnalysisError>;
+
   @ViewChild(ConsoleLogComponent) consoleL: ConsoleLogComponent =
     new ConsoleLogComponent();
 
@@ -21,7 +23,7 @@ export class IdeComponent implements OnInit {
     private _utils: UtilsService,
     private CRLManager: CRLManagerService
   ) {
-    this._analysis_errs = new Array<Object>();
+    this._errors = new Array<AnalysisError>();
   }
 
   ngOnInit(): void {
@@ -69,9 +71,13 @@ export class IdeComponent implements OnInit {
     this.consoleL.clear();
     try {
       let toPrint = this.CRLManager.execAnalysis(
+        // service update error table automatically
         this.tabFiles[this.activeFile].tabData
       );
-      this.consoleL.print(toPrint);
+      // trigger errors
+      this._errors = toPrint.err;
+      this.execVoidAction('get-reports');
+      this.consoleL.print(toPrint.msg);
     } catch (error) {
       this.consoleL.print(error);
     }
@@ -95,6 +101,7 @@ export class IdeComponent implements OnInit {
         this.compileCode();
         break;
       case 'get-reports':
+        this.CRLManager._err_emitter.emit(this._errors);
         break;
       default:
         alert('invalid action');

@@ -1,11 +1,15 @@
+<!-- IDE -->
 <div class="container-fluid">
+  <!-- header -->
   <div class="row h10vh w100vw">
     <app-actions-nav
       (tabEmiter)="addTab($event)"
       (voidEmitter)="execVoidAction($event)"
     ></app-actions-nav>
   </div>
+  <!-- body -->
   <div class="row h90vh w100vw">
+    <!-- aside -->
     <div class="col-sm-2 w25pctn">
       <app-aside-files
         [fileNames]="tabFiles"
@@ -13,6 +17,7 @@
         (fileToEdit)="switchTab($event)"
       ></app-aside-files>
     </div>
+    <!-- code sectjion -->
     <div class="col-lg-10 w75pctn">
       <div class="row h75pctn" *ngIf="this.tabFiles.length > 0">
         <app-files-edit
@@ -23,5 +28,9 @@
         <app-console-log></app-console-log>
       </div>
     </div>
+  </div>
+  <!-- report section -->
+  <div>
+    <router-outlet> </router-outlet>
   </div>
 </div>

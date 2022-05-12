@@ -1,28 +1,43 @@
-import { Injectable, Input } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
+import { AnalysisError } from 'src/app/models/CRL/anlys_err.model';
 import { CRLUtils } from 'src/app/models/CRL/crl-utils.model';
+import { EPVN } from 'src/app/models/tree/ast-node-expected.model';
+import { AstNode } from 'src/app/models/tree/ast-node.model';
 import { parser as Parser } from 'src/scripts/CRL.js';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CRLManagerService {
-  @Input() _analysis_errs: Array<Object> = new Array<Object>();
+  private _analysis_errs: Array<AnalysisError>;
+  @Output() _err_emitter: EventEmitter<Array<AnalysisError>> =
+    new EventEmitter();
 
-  constructor() {}
+  constructor() {
+    this._analysis_errs = new Array<AnalysisError>();
+  }
 
   execAnalysis(data: string) {
     // let grm_parser = new Parser(data);
     let output: CRLUtils = Parser.parse(data);
-    console.log(output);
-
     if (output.error_analysis.length === 0) {
+      // UPDATE ERRORS
       this._analysis_errs = output.error_analysis;
       // TODO run eval function
-
-      // TODO return eval result
-      return 'Gramatica correcta';
+      return {
+        msg: 'Gramatica correcta',
+        err: output.error_analysis,
+        fp: output.final_program,
+      };
     } else {
-      return 'Hay errores en la gramatica, puedes ver los resultados en Acciones -> ver reportes';
+      return {
+        msg: 'Hay errores en la gramatica, puedes ver los resultados en Acciones -> ver reportes',
+        err: output.error_analysis,
+      };
     }
+  }
+
+  public get analysis_errs(): Array<AnalysisError> {
+    return this._analysis_errs;
   }
 }

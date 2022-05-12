@@ -1,27 +1,23 @@
 import { EPVN, ValidPrevNodeChecker } from '../tree/ast-node-expected.model';
 import { AstNode } from '../tree/ast-node.model';
+import { AnalysisError } from './anlys_err.model';
 
 export class CRLUtils {
   constructor(
-    private _errors_analysis: Array<Object> = new Array<Object>(),
+    private _errors_analysis: Array<AnalysisError> = new Array<AnalysisError>(),
     private _cur_scope = new AstNode(EPVN.BODY, [], -1, null),
     private _prv_ast: ValidPrevNodeChecker = new ValidPrevNodeChecker(),
     private _final_program = _cur_scope
   ) {}
 
   public add_error(
-    line: Number,
-    col: Number,
+    line: number,
+    col: number,
     type: String,
     lexem: String
   ): void {
     // TODO show on html table
-    this._errors_analysis.push({
-      line: line,
-      col: col,
-      type: type,
-      lexem: lexem,
-    });
+    this._errors_analysis.push(new AnalysisError(line, col, type, lexem));
   }
 
   public push_pipe(new_node: AstNode, line: number): void {
@@ -94,7 +90,11 @@ export class CRLUtils {
     return this._cur_scope.get_last_child_type();
   }
 
-  get error_analysis(): Array<Object> {
+  get error_analysis(): Array<AnalysisError> {
     return this._errors_analysis;
+  }
+
+  get final_program(): AstNode {
+    return this._final_program;
   }
 }

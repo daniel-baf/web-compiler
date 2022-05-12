@@ -9,6 +9,7 @@ import { FilesEditComponent } from './components/ide/files-edit/files-edit.compo
 import { IdeComponent } from './components/ide/ide.component';
 import { FormsModule } from '@angular/forms';
 import { LoadScriptsService } from './services/load-scripts.service';
+import { ReportsComponent } from './components/rst/reports/reports.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { LoadScriptsService } from './services/load-scripts.service';
     AsideFilesComponent,
     FilesEditComponent,
     IdeComponent,
+    ReportsComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, FormsModule],
   providers: [LoadScriptsService],
