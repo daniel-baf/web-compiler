@@ -32,7 +32,7 @@ export enum EPVN { // Expected previous node
   // arythmetic operators
   ADD, // 23
   SUB, // 24
-  MUL, // 25
+  MULT, // 25
   DIV, // 26
   MOD, // 27
   POUND, // 28
@@ -73,6 +73,10 @@ export enum EPVN { // Expected previous node
   draw_ast, //  54
   draw_ts, // 55
   draw_exp, // 56
+  // invalid actions
+  invalid_cast, // 59
+  // other
+  EQQ, // ==
 }
 
 export class ValidPrevNodeChecker {

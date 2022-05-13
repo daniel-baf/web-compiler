@@ -112,10 +112,10 @@ case 13:
  this.$=[$$[$0-1], EPVN.stmt_selection]; 
 break;
 case 14:
- this.$=new AstNode(EPVN.func, [$$[$0-5], $$[$0-4], $$[$0-2]]); 
+ this.$=new AstNode(EPVN.func, [$$[$0-5], $$[$0-4], new AstNode(EPVN.param, $$[$0-2])]); 
 break;
 case 15:
- this.$=new AstNode(EPVN.func, [$$[$0-4], $$[$0-3], []]); 
+ this.$=new AstNode(EPVN.func, [$$[$0-4], $$[$0-3], new AstNode(EPVN.param, [null])]); 
 break;
 case 16:
  this.$=new AstNode(EPVN.func_main); 
@@ -148,7 +148,7 @@ case 32:
  this.$= new AstNode(EPVN.while, [$$[$0-2]]); 
 break;
 case 33:
- this.$=new AstNode(EPVN.var_dec, [$$[$0-1], $$[$0]]); 
+ this.$=new AstNode(EPVN.var_dec, [$$[$0-1]].concat($$[$0])); 
 break;
 case 34:
  $$[$0-2].push($$[$0]); this.$=$$[$0-2]; 
@@ -235,7 +235,7 @@ case 67:
  this.$ = new AstNode(EPVN.LT, [$$[$0-2], $$[$0]]); 
 break;
 case 68:
- this.$ = new AstNode(EPVN.EQ, [$$[$0-2], $$[$0]]); 
+ this.$ = new AstNode(EPVN.EQQ, [$$[$0-2], $$[$0]]); 
 break;
 case 69:
  this.$ = new AstNode(EPVN.NE, [$$[$0-2], $$[$0]]); 
@@ -247,13 +247,13 @@ case 71:
  this.$ = new AstNode(EPVN.HET, [$$[$0-2], $$[$0]]); 
 break;
 case 72:
- this.$ = new AstNode(EPVN.and, [$$[$0-2], $$[$0]]); 
+ this.$ = new AstNode(EPVN.and, [$$[$0-2], $$[$0]]);  
 break;
 case 73:
- this.$ = new AstNode(EPVN.or, [$$[$0-2], $$[$0]]); 
+ this.$ = new AstNode(EPVN.or, [$$[$0-2], $$[$0]]);  
 break;
 case 74:
- this.$ = new AstNode(EPVN.not, [$$[$0]]); 
+ this.$ = new AstNode(EPVN.not, [$$[$0]]);  
 break;
 case 75:
  this.$=new AstNode(EPVN.func_call, [$$[$0-3], $$[$0-1]]); 

@@ -16,7 +16,6 @@ export class CRLUtils {
     type: String,
     lexem: String
   ): void {
-    // TODO show on html table
     this._errors_analysis.push(new AnalysisError(line, col, type, lexem));
   }
 

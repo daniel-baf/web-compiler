@@ -156,8 +156,8 @@ stmt
 ;
 
 func_def
-    : var_type id '(' param_request ')' ':'     { $$=new AstNode(EPVN.func, [$1, $2, $4]); }
-    | var_type id '(' ')' ':'                   { $$=new AstNode(EPVN.func, [$1, $2, []]); }
+    : var_type id '(' param_request ')' ':'     { $$=new AstNode(EPVN.func, [$1, $2, new AstNode(EPVN.param, $4)]); }
+    | var_type id '(' ')' ':'                   { $$=new AstNode(EPVN.func, [$1, $2, new AstNode(EPVN.param, [null])]); }
     | 'VOID' 'MAIN' '(' ')' ':'                 { $$=new AstNode(EPVN.func_main); }
 ;
 
@@ -197,7 +197,7 @@ while_stmt
 ;
 
 var_dec
-    : var_type var_assign_list      { $$=new AstNode(EPVN.var_dec, [$1, $2]); }
+    : var_type var_assign_list      { $$=new AstNode(EPVN.var_dec, [$1].concat($2)); }
 ;
 
 var_assign_list
@@ -269,7 +269,7 @@ op_sym
 compare_expr
     : expr '>' expr         { $$ = new AstNode(EPVN.GT, [$1, $3]); }
     | expr '<' expr         { $$ = new AstNode(EPVN.LT, [$1, $3]); }
-    | expr '==' expr        { $$ = new AstNode(EPVN.EQ, [$1, $3]); }
+    | expr '==' expr        { $$ = new AstNode(EPVN.EQQ, [$1, $3]); }
     | expr '!=' expr        { $$ = new AstNode(EPVN.NE, [$1, $3]); }
     | expr '<=' expr        { $$ = new AstNode(EPVN.LET, [$1, $3]); }
     | expr '>=' expr        { $$ = new AstNode(EPVN.HET, [$1, $3]); }
@@ -277,9 +277,9 @@ compare_expr
 
 logical_expr
     // : expr '|&' expr        { $$ = new AstNode("&&", [$1, $3]); }
-    : expr '&&' expr        { $$ = new AstNode(EPVN.and, [$1, $3]); }
-    | expr '||' expr        { $$ = new AstNode(EPVN.or, [$1, $3]); }
-    | '!' expr              { $$ = new AstNode(EPVN.not, [$2]); }
+    : expr '&&' expr        { $$ = new AstNode(EPVN.and, [$1, $3]);  }
+    | expr '||' expr        { $$ = new AstNode(EPVN.or, [$1, $3]);  }
+    | '!' expr              { $$ = new AstNode(EPVN.not, [$2]);  }
 ;
 
 func_call

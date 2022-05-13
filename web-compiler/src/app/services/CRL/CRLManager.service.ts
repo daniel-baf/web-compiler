@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { AnalysisError } from 'src/app/models/CRL/anlys_err.model';
+import { CRLEvaluator } from 'src/app/models/CRL/crl-eval.model';
 import { CRLUtils } from 'src/app/models/CRL/crl-utils.model';
 import { EPVN } from 'src/app/models/tree/ast-node-expected.model';
 import { AstNode } from 'src/app/models/tree/ast-node.model';
@@ -24,6 +25,8 @@ export class CRLManagerService {
       // UPDATE ERRORS
       this._analysis_errs = output.error_analysis;
       // TODO run eval function
+      let _evaler = new CRLEvaluator();
+      _evaler.eval(output.final_program);
       return {
         msg: 'Gramatica correcta',
         err: output.error_analysis,

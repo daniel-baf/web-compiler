@@ -62,7 +62,6 @@ export class AstNode {
         }
       }
     } catch (error) {
-      // TODO show error html
       return new AstNode(EPVN.EMPTY_LIST);
     }
   }
