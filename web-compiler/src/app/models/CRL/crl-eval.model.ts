@@ -1,7 +1,6 @@
 import { SymTable } from '../analyzer/sym-table.model';
 import { EPVN } from '../tree/ast-node-expected.model';
 import { AstNode } from '../tree/ast-node.model';
-import { ExprCaster } from './objects/expr/expr-caster.model';
 import { GlobalVarDec } from './objects/global-var-dec.model';
 
 export class CRLEvaluator {

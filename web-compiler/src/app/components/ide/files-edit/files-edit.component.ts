@@ -31,6 +31,6 @@ export class FilesEditComponent implements OnInit {
   }
 
   setCursor(pos: number, _console: any) {
-    alert('set cur ' + pos);
+    // alert('set cur ' + pos);
   }
 }

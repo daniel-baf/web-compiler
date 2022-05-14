@@ -74,9 +74,9 @@ export enum EPVN { // Expected previous node
   draw_ts, // 55
   draw_exp, // 56
   // invalid actions
-  invalid_cast, // 59
+  invalid_cast, // 57
   // other
-  EQQ, // ==
+  EQQ, // == 58
 }
 
 export class ValidPrevNodeChecker {

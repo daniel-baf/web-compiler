@@ -20,13 +20,13 @@ export class GlobalVarDec {
       let _id: any; // this node is a string
       if (_var.children[1] != undefined) {
         // exist expression
-        _id = _var.children[0].children[0];
+        _id = _var.children[0].children[0]; // get element
         let _res: AstNode = _caster.get_final_cast(_var.children[1]);
-        if (_caster.is_valid_result(_type, _res.label)) {
-          _sym_table.add(_id, _res.children[0], 0, _type);
-        } else {
-          // TODO show error
-        }
+        // if (_caster.is_valid_result(_type, _res.label)) {
+        //   _sym_table.add(_id, _res.children[0], 0, _type);
+        // } else {
+        //   // TODO show error
+        // }
       } else {
         // no expresion, value null
         _id = _var.children[0];
