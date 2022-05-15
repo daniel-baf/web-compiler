@@ -30,7 +30,7 @@
     </div>
   </div>
   <!-- report section -->
-  <div>
-    <router-outlet> </router-outlet>
+  <div *ngIf="_view === 1">
+    <app-reports [_errors_analysis]="_errors"></app-reports>
   </div>
 </div>

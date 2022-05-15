@@ -21,12 +21,15 @@ export class GlobalVarDec {
       if (_var.children[1] != undefined) {
         // exist expression
         _id = _var.children[0].children[0]; // get element
-        let _res: AstNode = _caster.get_final_cast(_var.children[1]);
-        // if (_caster.is_valid_result(_type, _res.label)) {
-        //   _sym_table.add(_id, _res.children[0], 0, _type);
-        // } else {
-        //   // TODO show error
-        // }
+        let _res: AstNode = _caster.get_final_cast(
+          _var.children[1],
+          _sym_table
+        );
+        if (_caster.itemCaster.is_assignable(_type, _res.label)) {
+          _sym_table.add(_id, _res.children[0], 0, _type);
+        } else {
+          console.log('type missmatch');
+        }
       } else {
         // no expresion, value null
         _id = _var.children[0];

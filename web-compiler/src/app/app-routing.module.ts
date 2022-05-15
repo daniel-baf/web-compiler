@@ -7,7 +7,6 @@ const routes: Routes = [
   {
     path: '',
     component: IdeComponent,
-    children: [{ path: 'reports', component: ReportsComponent }],
   },
 ];
 @NgModule({

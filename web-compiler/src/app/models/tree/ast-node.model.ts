@@ -43,9 +43,7 @@ export class AstNode {
   public add_child(child: AstNode) {
     try {
       this._children.push(child);
-    } catch (error) {
-      console.log('error adding child: ' + error);
-    }
+    } catch (error) {}
   }
 
   // this method is only called to know the nodes wich are 'line', 'selection'...

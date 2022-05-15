@@ -2,8 +2,10 @@
 %{
     const { CRLUtils } = require('src/app/models/CRL/crl-utils.model.ts');
     const { AstNode } = require('src/app/models/tree/ast-node.model.ts');
-    const { EPVN } = require('src/app/models/tree/ast-node-expected.model.ts')
+    const { EPVN } = require('src/app/models/tree/ast-node-expected.model.ts');
+    const { ItmCaster } = require('src/app/models/CRL/objects/expr/item-caster.model.ts');
     let crl_utils = new CRLUtils();
+    let _caster = new ItmCaster();
 %}
 
 /* lexical grammar */
@@ -244,6 +246,7 @@ expr
     // allowed values
     | element               { $$=$1; }
     | func_call             { $$=$1; }
+    | '(' expr ')'          { $$ = new AstNode(EPVN.PARENTHESIS, [$2]); }
 ;
 
 arythmetic_expr
@@ -254,7 +257,6 @@ arythmetic_expr
     | expr '/' expr                 { $$ = new AstNode(EPVN.DIV, [$1, $3]); }
     | expr '%' expr                 { $$ = new AstNode(EPVN.MOD, [$1, $3]); }
     | expr '^' expr                 { $$ = new AstNode(EPVN.POUND, [$1, $3]); }
-    | '(' expr ')'                  { $$ = new AstNode(EPVN.PARENTHESIS, [$2]); }
 ;
 
 op_expr

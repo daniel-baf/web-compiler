@@ -157,7 +157,6 @@ export class ValidPrevNodeChecker {
           return false;
       }
     } catch (error) {
-      console.log('Error trying to check if prev prod is valid ' + error);
       return false;
     }
   }

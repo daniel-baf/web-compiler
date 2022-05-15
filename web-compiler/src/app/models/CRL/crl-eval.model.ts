@@ -14,6 +14,7 @@ export class CRLEvaluator {
 
   public eval(_root: AstNode): void {
     this.sub_eval(_root);
+    console.log('Sym table');
     console.log(this._sym_table);
   }
 
@@ -27,13 +28,12 @@ export class CRLEvaluator {
           if (this.is_evaluable(_child)) {
             this.sub_eval(_child);
           }
-        } catch (error) {
-          console.log(error);
-        }
+        } catch (error) {}
       });
     }
   }
 
+  // execute node evaluation
   private eval_node(_node: AstNode): void {
     // normal execution
     switch (_node.label) {
@@ -59,6 +59,7 @@ export class CRLEvaluator {
     }
   }
 
+  // check if actual node is evaluable, as line declr, statement selection, functions...
   private is_evaluable(_node: AstNode) {
     try {
       return (
