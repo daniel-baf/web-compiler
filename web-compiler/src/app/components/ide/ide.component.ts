@@ -30,12 +30,10 @@ export class IdeComponent implements OnInit {
   ngOnInit(): void {
     // create temp file to test
     this.addTab([
-      // new TabFile(
-      //   'test.crl',
-      //   'Boolean glb_bool, bool2\nInt glbInt = 2+ (1 / 2)\n\nInt get_max(Int n1, Int n2):\n\tSi(n1 > n2):\n\t\tRetorno n1\n\tSino Si(n2 > n1):\n\t\tRetorno n2\n\tSino:\n\n\nVoid func_no_data():\n\tDouble k = -12\n\tMientras ( k < 2 ^ 3 - 10):\n\t\tPara(Int k1 = 0; k < 2; ++):\n\t\t\tSi ( k %2 == 0):\n\t\t\t\tMostrar("Es par")\n\t\t\tSino:\n\t\t\t\tMostrar("Es impar")\n\t\tMostrar("Fin de para")\n\tMostrar("Fin de mientras")\n\nVoid pring_msg(String msg):\n\tMostrar("Mensaje: {1}",msg)\n\nString print_msg_mas(Int n1, Int n2):\n\tInt result = get_max(n1,n2)\n\tString msgRst = "El resultado de sumar " + n1 + " con " + n2 + " es: " + get_max(n1,n2)\n\tpring_msg(msgRst)\n\nVoid Principal():\n\tBoolean valid = !(2 > 3)\n\tSi(valid):\n\tChar c_char = \'b\'\n\tSi ( c_char != \'z\'):\n\t\tInt tmp1 = 2 * 3 /1\n\t\tInt lck = tmp1 % 2\n\t\tprint_msg_mas(tmp1, lck)\n\tSino:\n\t\tPara(Int k = 1; k< 12; ++):\n\t\t\tMostrar("hola h1")\'" adios pato 2 \'"\n\t\tMostrar("adios")   \'"hola pato\'"\n\tDibujarAST(func_no_data)\n\tDibujarEXP(2+1/3^(-1+2))\n\tMostrar("FIN DE MAIN")\n'
-      // ),
-      // new TabFile('test.crl', 'Boolean glb_bool, bool2 = (2 + 1 * (2/1) > 3) && (true != false)\n'),
-      new TabFile('test.crl', 'Int test = 2 + 1 / (3 -1) * 4\n'),
+      new TabFile(
+        'test.crl',
+        'Boolean glb_bool = false, bool2 = !glb_bool\nInt glbInt = 2+ false \n\nInt get_max(Int n1, Int n2):\n\tSi(n1 > n2):\n\t\tRetorno n1\n\tSino Si(n2 > n1):\n\t\tRetorno n2\n\tSino:\n\n\nVoid func_no_data():\n\tDouble k = -12\n\tMientras ( k < 2 ^ 3 - 10):\n\t\tPara(Int k1 = 0; k < 2; ++):\n\t\t\tSi ( k %2 == 0):\n\t\t\t\tMostrar("Es par")\n\t\t\tSino:\n\t\t\t\tMostrar("Es impar")\n\t\tMostrar("Fin de para")\n\tMostrar("Fin de mientras")\n\nVoid pring_msg(String msg):\n\tMostrar("Mensaje: {1}",msg)\n\nString print_msg_mas(Int n1, Int n2):\n\tInt result = get_max(n1,n2)\n\tString msgRst = "El resultado de sumar " + n1 + " con " + n2 + " es: " + get_max(n1,n2)\n\tpring_msg(msgRst)\n\nVoid Principal():\n\tBoolean valid = !(2 > 3)\n\tSi(valid):\n\tChar c_char = \'b\'\n\tSi ( c_char != \'z\'):\n\t\tInt tmp1 = 2 * 3 /1\n\t\tInt lck = tmp1 % 2\n\t\tprint_msg_mas(tmp1, lck)\n\tSino:\n\t\tPara(Int k = 1; k< 12; ++):\n\t\t\tMostrar("hola h1")\'" adios pato 2 \'"\n\t\tMostrar("adios")   \'"hola pato\'"\n\tDibujarAST(func_no_data)\n\tDibujarEXP(2+1/3^(-1+2))\n\tMostrar("FIN DE MAIN")\n'
+      ),
     ]);
   }
 
@@ -104,6 +102,9 @@ export class IdeComponent implements OnInit {
         break;
       case 'get-reports':
         this._view = 1;
+        break;
+      case 'close-reports':
+        this._view = 0;
         break;
       default:
         alert('invalid action');

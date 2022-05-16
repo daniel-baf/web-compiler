@@ -63,4 +63,8 @@ export class AstNode {
       return new AstNode(EPVN.EMPTY_LIST);
     }
   }
+
+  public ignore_children(): number {
+    return this._ignore_child;
+  }
 }

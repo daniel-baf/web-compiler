@@ -26,18 +26,20 @@ export class CRLManagerService {
       this._analysis_errs = output.error_analysis;
       // TODO run eval function
       let _evaler = new CRLEvaluator();
-      _evaler.eval(output.final_program);
-      return {
-        msg: 'Gramatica correcta',
-        err: output.error_analysis,
-        fp: output.final_program,
-      };
-    } else {
-      return {
-        msg: 'Hay errores en la gramatica, puedes ver los resultados en Acciones -> ver reportes',
-        err: output.error_analysis,
-      };
+      _evaler.eval(output.final_program, this.analysis_errs);
+      // check no errors while evaluating
+      if (this.analysis_errs.length === 0) {
+        return {
+          msg: 'Gramatica correcta',
+          err: output.error_analysis,
+          fp: output.final_program,
+        };
+      }
     }
+    return {
+      msg: 'Hay errores en la gramatica, puedes ver los resultados en Acciones -> ver reportes',
+      err: output.error_analysis,
+    };
   }
 
   public get analysis_errs(): Array<AnalysisError> {

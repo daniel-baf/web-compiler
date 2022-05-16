@@ -1,32 +1,36 @@
 import { SymTable } from '../analyzer/sym-table.model';
 import { EPVN } from '../tree/ast-node-expected.model';
 import { AstNode } from '../tree/ast-node.model';
+import { AnalysisError } from './anlys_err.model';
+import { FunctionEvaluator } from './objects/function.model';
 import { GlobalVarDec } from './objects/global-var-dec.model';
 
 export class CRLEvaluator {
   private _sym_table: SymTable;
-  private _func_map: Map<String, AstNode>;
+  private _func_map: Map<String, FunctionEvaluator>;
+  private _main_func?: FunctionEvaluator = undefined;
 
   constructor() {
     this._sym_table = new SymTable();
-    this._func_map = new Map<String, AstNode>();
+    this._func_map = new Map<String, FunctionEvaluator>();
   }
 
-  public eval(_root: AstNode): void {
-    this.sub_eval(_root);
-    console.log('Sym table');
+  public eval(_root: AstNode, _errors: Array<AnalysisError>): void {
+    this.sub_eval(_root, _errors);
     console.log(this._sym_table);
+    console.log(this._func_map);
+    console.log(_errors);
   }
 
-  private sub_eval(_cur_node: AstNode): void {
+  private sub_eval(_cur_node: AstNode, _errors: Array<AnalysisError>): void {
     // eval node
-    this.eval_node(_cur_node);
+    this.eval_node(_cur_node, _errors);
     // recursively
     if (_cur_node != null && _cur_node.children != null) {
       _cur_node.children.forEach((_child) => {
         try {
           if (this.is_evaluable(_child)) {
-            this.sub_eval(_child);
+            this.sub_eval(_child, _errors);
           }
         } catch (error) {}
       });
@@ -34,28 +38,37 @@ export class CRLEvaluator {
   }
 
   // execute node evaluation
-  private eval_node(_node: AstNode): void {
+  private eval_node(_node: AstNode, _errors: Array<AnalysisError>): void {
     // normal execution
     switch (_node.label) {
       case EPVN.global_var_dec:
         let _gvd = new GlobalVarDec();
-        _gvd.eval(_node, this._sym_table);
+        _gvd.eval(_node, this._sym_table, _errors);
         break;
-        // case EPVN.func_main: // execute
-        //   console.log('func main, EXECUTE');
-        //   break;
-        // case EPVN.func:
-        //   // add function
-        //   console.log('func');
-        //   break;
-        // case EPVN.stmt_line:
-        //   console.log('stmt line');
-        //   break;
-        // case EPVN.stmt_selection:
-        //   console.log('stmt selection');
+      case EPVN.func:
+        // add function
+        let _func: FunctionEvaluator = new FunctionEvaluator(
+          this._sym_table,
+          _node
+        );
+        this._func_map.set(_func.id, _func);
+        break;
+      case EPVN.func_main: // execute
+        if (this._main_func === undefined) {
+          this._main_func = new FunctionEvaluator(this._sym_table, _node);
+        } else {
+          _errors.push(
+            new AnalysisError(
+              0,
+              0,
+              'Semantico',
+              'Solo puede haber una funcion main'
+            )
+          );
+        }
         break;
       default:
-      // console.log('invalid, add error');
+      // ignore
     }
   }
 
@@ -65,9 +78,7 @@ export class CRLEvaluator {
       return (
         _node.label === EPVN.global_var_dec ||
         _node.label === EPVN.func ||
-        _node.label === EPVN.func_main ||
-        _node.label === EPVN.stmt_line ||
-        _node.label === EPVN.stmt_selection
+        _node.label === EPVN.func_main
       );
     } catch (error) {
       return false;

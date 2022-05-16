@@ -1,12 +1,17 @@
 import { SymTable } from '../../analyzer/sym-table.model';
 import { EPVN } from '../../tree/ast-node-expected.model';
 import { AstNode } from '../../tree/ast-node.model';
+import { AnalysisError } from '../anlys_err.model';
 import { ExprCaster } from './expr/expr-caster.model';
 
 export class GlobalVarDec {
   constructor() {}
 
-  public eval(_node: AstNode, _sym_table: SymTable) {
+  public eval(
+    _node: AstNode,
+    _sym_table: SymTable,
+    _errors: Array<AnalysisError>
+  ) {
     let _type: any = _node.children[0];
     let _caster: ExprCaster = new ExprCaster();
     let _vars: AstNode[] = [];
@@ -28,7 +33,16 @@ export class GlobalVarDec {
         if (_caster.itemCaster.is_assignable(_type, _res.label)) {
           _sym_table.add(_id, _res.children[0], 0, _type);
         } else {
-          console.log('type missmatch');
+          _errors.push(
+            new AnalysisError(
+              0,
+              0,
+              'Semantico',
+              `Tipo no coincidente para ${_id}, esperado ${
+                EPVN[_type]
+              }  pero se obtuvo ${EPVN[_res.label]}`
+            )
+          );
         }
       } else {
         // no expresion, value null

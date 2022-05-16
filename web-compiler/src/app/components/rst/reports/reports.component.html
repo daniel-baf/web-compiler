@@ -89,5 +89,10 @@
     </div>
   </div>
 
-  <a class="btn btn-primary" routerLink="" role="button">Ocultar</a>
+  <a
+    class="btn btn-primary"
+    role="button"
+    (click)="voidEvent($event, 'close-reports')"
+    >Ocultar</a
+  >
 </div>

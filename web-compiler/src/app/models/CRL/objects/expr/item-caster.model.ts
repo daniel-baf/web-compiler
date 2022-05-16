@@ -7,17 +7,8 @@ export class ItmCaster {
   }
 
   public cast(_label: EPVN, _left: AstNode, _right: AstNode): AstNode {
-    if (
-      _label === EPVN.ADD ||
-      _label === EPVN.MULT ||
-      _label === EPVN.DIV ||
-      _label === EPVN.SUB ||
-      _label === EPVN.MOD ||
-      _label === EPVN.POUND
-    ) {
+    if (this.is_evaluable(_label)) {
       return this.eval_cast(_left, _right, _label);
-    } else if (_label === EPVN.PARENTHESIS) {
-      return _left;
     } else {
       // TODO add the ID eval and func call
       return new AstNode(EPVN.invalid_cast);
@@ -513,22 +504,22 @@ export class ItmCaster {
         }
       // compare expression
       case EPVN.GT:
-        _data = ll > lr;
+        _data = Number(ll) > Number(lr);
         return new AstNode(EPVN.bool_val, [_data]);
       case EPVN.LT:
-        _data = ll < lr;
+        _data = Number(ll) < Number(lr);
         return new AstNode(EPVN.bool_val, [_data]);
       case EPVN.EQQ:
-        _data = ll === lr;
+        _data = Number(ll) === Number(lr);
         return new AstNode(EPVN.bool_val, [_data]);
       case EPVN.NE:
         _data = ll != lr;
         return new AstNode(EPVN.bool_val, [_data]);
       case EPVN.LET:
-        _data = ll <= lr;
+        _data = Number(ll) <= Number(lr);
         return new AstNode(EPVN.bool_val, [_data]);
       case EPVN.HET:
-        _data = ll >= lr;
+        _data = Number(ll) >= Number(lr);
         return new AstNode(EPVN.bool_val, [_data]);
       // other
       case EPVN.PP:
@@ -538,16 +529,12 @@ export class ItmCaster {
         console.log('ll');
         break;
       case EPVN.and:
-        console.log('and');
-        break;
+        _data = ll && lr;
+        return new AstNode(EPVN.bool_val, [_data]);
       case EPVN.or:
-        console.log('or');
-        break;
-      case EPVN.not:
-        console.log('not');
-        break;
+        _data = ll || lr;
+        return new AstNode(EPVN.bool_val, [_data]);
       default:
-        console.log('invalid');
     }
     return new AstNode(EPVN.invalid_cast);
   }
@@ -559,7 +546,15 @@ export class ItmCaster {
       _label === EPVN.MULT ||
       _label === EPVN.DIV ||
       _label === EPVN.MOD ||
-      _label === EPVN.POUND
+      _label === EPVN.POUND ||
+      _label === EPVN.LT ||
+      _label === EPVN.LET ||
+      _label === EPVN.GT ||
+      _label === EPVN.HET ||
+      _label === EPVN.EQQ ||
+      _label === EPVN.NE ||
+      _label === EPVN.and ||
+      _label === EPVN.or
     );
   }
 

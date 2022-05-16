@@ -1,6 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AnalysisError } from 'src/app/models/CRL/anlys_err.model';
-import { CRLManagerService } from 'src/app/services/CRL/CRLManager.service';
 
 @Component({
   selector: 'app-reports',
@@ -8,6 +7,7 @@ import { CRLManagerService } from 'src/app/services/CRL/CRLManager.service';
   styleUrls: ['./reports.component.css'],
 })
 export class ReportsComponent implements OnInit {
+  @Output() voidEmitter = new EventEmitter<string>();
   @Input() _errors_analysis: Array<AnalysisError>;
 
   constructor() {
@@ -18,5 +18,10 @@ export class ReportsComponent implements OnInit {
     // this._crl_serv._err_emitter.subscribe((data) => {
     //   this._errors_analysis = data;
     // });
+  }
+
+  voidEvent(e: any, str: string) {
+    e.preventDefault();
+    this.voidEmitter.emit(str);
   }
 }

@@ -31,6 +31,9 @@
   </div>
   <!-- report section -->
   <div *ngIf="_view === 1">
-    <app-reports [_errors_analysis]="_errors"></app-reports>
+    <app-reports
+      [_errors_analysis]="_errors"
+      (voidEmitter)="execVoidAction($event)"
+    ></app-reports>
   </div>
 </div>

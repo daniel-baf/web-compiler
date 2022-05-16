@@ -18,6 +18,9 @@ export class ExprCaster {
     } else if (_expr.label < 6 && _expr.label > 0) {
       // TODO find when ID
       return _expr;
+    } else if (_expr.label === EPVN.not) {
+      let data: any = !_expr.children[0];
+      return new AstNode(EPVN.bool_val, [data]);
     } else if (_expr.label === EPVN.PARENTHESIS) {
       return this.get_final_cast(_expr.children[0], _sym_table);
     } else if (this._caster.is_evaluable(_expr.label)) {
