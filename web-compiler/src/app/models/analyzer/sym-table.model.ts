@@ -71,6 +71,10 @@ export class SymTable {
         return EPVN.invalid_cast;
     }
   }
+
+  public get table(): SymTableRow[] {
+    return this._table;
+  }
 }
 
 export class SymTableRow {

@@ -1,0 +1,10 @@
+.graph {
+  border: solid 1px black;
+  padding: 2rem;
+  max-height: 500px;
+}
+
+.graph svg {
+  height: 400pt;
+  width: fit-content;
+}

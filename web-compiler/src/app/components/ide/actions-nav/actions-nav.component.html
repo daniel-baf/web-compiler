@@ -69,10 +69,12 @@
       <a class="dropdown-item" (click)="voidEvent($event, 'get-reports')"
         >Ver reportes</a
       >
-      <a class="dropdown-item" href="#img-galery">Coleccion de imagenes</a>
+      <a class="dropdown-item" (click)="voidEvent($event, 'img-gallery')"
+        >Coleccion de imagenes</a
+      >
       <div class="dropdown-divider"></div>
-      <a class="dropdown-item" href="#toggle-console-view"
-        >Mostrar/Ocultar consola</a
+      <a class="dropdown-item" (click)="voidEvent($event, 'main-view')"
+        >Vista principal</a
       >
     </div>
   </li>

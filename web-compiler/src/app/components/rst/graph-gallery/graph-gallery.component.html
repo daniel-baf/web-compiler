@@ -1,0 +1,15 @@
+<!-- AST GRAPH -->
+<div class="container">
+  <h2>Graficos AST</h2>
+  <div *ngFor="let _elem of _drawable; let _i = index">
+    <div class="card text-left">
+      <div class="card-body">
+        <h4 class="card-title" [id]="'graph-t' + _i">Grafico {{ _i + 1 }}</h4>
+        <p class="card-text">Grafico generado para la funcion</p>
+        <div [id]="'graph' + _i" class="graph"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- graph section -->
+<button [id]="'btnk'" (click)="d3_g()">Click</button>

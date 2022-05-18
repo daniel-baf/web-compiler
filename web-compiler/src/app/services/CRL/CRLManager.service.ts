@@ -1,8 +1,7 @@
-import { EventEmitter, Injectable, Output } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AnalysisError } from 'src/app/models/CRL/anlys_err.model';
 import { CRLEvaluator } from 'src/app/models/CRL/crl-eval.model';
 import { CRLUtils } from 'src/app/models/CRL/crl-utils.model';
-import { EPVN } from 'src/app/models/tree/ast-node-expected.model';
 import { AstNode } from 'src/app/models/tree/ast-node.model';
 import { parser as Parser } from 'src/scripts/CRL.js';
 
@@ -11,14 +10,12 @@ import { parser as Parser } from 'src/scripts/CRL.js';
 })
 export class CRLManagerService {
   private _analysis_errs: Array<AnalysisError>;
-  @Output() _err_emitter: EventEmitter<Array<AnalysisError>> =
-    new EventEmitter();
 
   constructor() {
     this._analysis_errs = new Array<AnalysisError>();
   }
 
-  execAnalysis(data: string) {
+  execAnalysis(data: string, _drawable_graphs: AstNode[]) {
     // let grm_parser = new Parser(data);
     let output: CRLUtils = Parser.parse(data);
     if (output.error_analysis.length === 0) {
@@ -26,7 +23,7 @@ export class CRLManagerService {
       this._analysis_errs = output.error_analysis;
       // TODO run eval function
       let _evaler = new CRLEvaluator();
-      _evaler.eval(output.final_program, this.analysis_errs);
+      _evaler.eval(output.final_program, this.analysis_errs, _drawable_graphs);
       // check no errors while evaluating
       if (this.analysis_errs.length === 0) {
         return {

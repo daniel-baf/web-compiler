@@ -10,6 +10,7 @@ import { IdeComponent } from './components/ide/ide.component';
 import { FormsModule } from '@angular/forms';
 import { LoadScriptsService } from './services/load-scripts.service';
 import { ReportsComponent } from './components/rst/reports/reports.component';
+import { GraphGalleryComponent } from './components/rst/graph-gallery/graph-gallery.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { ReportsComponent } from './components/rst/reports/reports.component';
     FilesEditComponent,
     IdeComponent,
     ReportsComponent,
+    GraphGalleryComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, FormsModule],
   providers: [LoadScriptsService],

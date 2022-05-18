@@ -120,7 +120,7 @@ export class ValidPrevNodeChecker {
             if (_cur_node.label === EPVN.stmt_selection) {
               if (
                 _cur_node.children[0].label === EPVN.else_if &&
-                _prev_node.children[0].label != EPVN.if
+                !(_prev_node.children[0].label === EPVN.if || _prev_node.children[0].label === EPVN.else_if)
               ) {
                 return false;
               } else if (

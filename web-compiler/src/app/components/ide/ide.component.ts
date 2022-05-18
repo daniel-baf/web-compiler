@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AnalysisError } from 'src/app/models/CRL/anlys_err.model';
 import { TabFile } from 'src/app/models/tab-file.model';
+import { AstNode } from 'src/app/models/tree/ast-node.model';
 import { CRLManagerService } from 'src/app/services/CRL/CRLManager.service';
 import { UtilsService } from 'src/app/services/Utils.service';
 import { ConsoleLogComponent } from './console-log/console-log.component';
@@ -14,8 +15,9 @@ import { ConsoleLogComponent } from './console-log/console-log.component';
 export class IdeComponent implements OnInit {
   public activeFile = 0;
   public tabFiles: TabFile[] = [];
-  public _view: number = 0;
+  public _view: number = 3;
   public _errors: Array<AnalysisError>;
+  public _drawable: AstNode[] = [];
 
   @ViewChild(ConsoleLogComponent) consoleL: ConsoleLogComponent =
     new ConsoleLogComponent();
@@ -32,7 +34,7 @@ export class IdeComponent implements OnInit {
     this.addTab([
       new TabFile(
         'test.crl',
-        'Boolean glb_bool = false, bool2 = !glb_bool\nInt glbInt = 2+ false \n\nInt get_max(Int n1, Int n2):\n\tSi(n1 > n2):\n\t\tRetorno n1\n\tSino Si(n2 > n1):\n\t\tRetorno n2\n\tSino:\n\n\nVoid func_no_data():\n\tDouble k = -12\n\tMientras ( k < 2 ^ 3 - 10):\n\t\tPara(Int k1 = 0; k < 2; ++):\n\t\t\tSi ( k %2 == 0):\n\t\t\t\tMostrar("Es par")\n\t\t\tSino:\n\t\t\t\tMostrar("Es impar")\n\t\tMostrar("Fin de para")\n\tMostrar("Fin de mientras")\n\nVoid pring_msg(String msg):\n\tMostrar("Mensaje: {1}",msg)\n\nString print_msg_mas(Int n1, Int n2):\n\tInt result = get_max(n1,n2)\n\tString msgRst = "El resultado de sumar " + n1 + " con " + n2 + " es: " + get_max(n1,n2)\n\tpring_msg(msgRst)\n\nVoid Principal():\n\tBoolean valid = !(2 > 3)\n\tSi(valid):\n\tChar c_char = \'b\'\n\tSi ( c_char != \'z\'):\n\t\tInt tmp1 = 2 * 3 /1\n\t\tInt lck = tmp1 % 2\n\t\tprint_msg_mas(tmp1, lck)\n\tSino:\n\t\tPara(Int k = 1; k< 12; ++):\n\t\t\tMostrar("hola h1")\'" adios pato 2 \'"\n\t\tMostrar("adios")   \'"hola pato\'"\n\tDibujarAST(func_no_data)\n\tDibujarEXP(2+1/3^(-1+2))\n\tMostrar("FIN DE MAIN")\n'
+        'Boolean glb_bool = false, bool2 = !glb_bool\nInt glbInt = 2+ false \n\nInt get_max(Int n1, Int n2):\n\tSi(n1 > n2):\n\t\tRetorno n1\n\tSino Si(n2 > n1):\n\t\tRetorno n2\n\tSino:\n\n\nVoid func_no_data():\n\tDouble k = -12\n\tMientras ( k < 2 ^ 3 - 10):\n\t\tPara(Int k1 = 0; k < 2; ++):\n\t\t\tSi ( k %2 == 0):\n\t\t\t\tMostrar("Es par")\n\t\t\tSino:\n\t\t\t\tMostrar("Es impar")\n\t\tMostrar("Fin de para")\n\tMostrar("Fin de mientras")\n\nVoid pring_msg(String msg):\n\tMostrar("Mensaje: {1}",msg)\n\nString print_msg_mas(Int n1, Int n2):\n\tInt result = get_max(n1,n2)\n\tString msgRst = "El resultado de sumar " + n1 + " con " + n2 + " es: " + get_max(n1,n2)\n\tpring_msg(msgRst)\n\nVoid Principal():\n\tBoolean valid = !(2 > 3)\n\tSi(valid):\n\tChar c_char = \'b\'\n\tSi ( c_char != \'z\'):\n\t\tInt tmp1 = 2 * 3 /1\n\t\tInt lck = tmp1 % 2\n\t\tprint_msg_mas(tmp1, lck)\n\tSino:\n\t\tPara(Int k = 1; k< 12; ++):\n\t\t\tMostrar("hola h1")\'" adios pato 2 \'"\n\t\tMostrar("adios")   \'"hola pato\'"\n\tDibujarAST(func_no_data)\n\tDibujarAST(get_max)\n\tDibujarEXP(2+1/3^(-1+2))\n\tMostrar("FIN DE MAIN")\n'
       ),
     ]);
   }
@@ -69,17 +71,24 @@ export class IdeComponent implements OnInit {
 
   // compile the code into the editor
   compileCode() {
-    this.consoleL.clear();
     try {
-      let toPrint = this.CRLManager.execAnalysis(
-        // service update error table automatically
-        this.tabFiles[this.activeFile].tabData
-      );
-      // trigger errors
-      this._errors = toPrint.err;
-      this.consoleL.print(toPrint.msg);
+      this._drawable = [];
+      this.consoleL.clear();
+      try {
+        let toPrint = this.CRLManager.execAnalysis(
+          // service update error table automatically
+          this.tabFiles[this.activeFile].tabData,
+          this._drawable
+        );
+        // trigger errors
+        this._errors = toPrint.err;
+        // save final program
+        this.consoleL.print(toPrint.msg);
+      } catch (error) {
+        this.consoleL.print(error);
+      }
     } catch (error) {
-      this.consoleL.print(error);
+      alert('no es posible compilar en este momento');
     }
   }
 
@@ -104,11 +113,19 @@ export class IdeComponent implements OnInit {
         this._view = 1;
         break;
       case 'close-reports':
+      case 'main-view':
         this._view = 0;
+        break;
+      case 'img-gallery':
+        this._view = 3;
         break;
       default:
         alert('invalid action');
         break;
     }
+  }
+
+  get_drawable(): AstNode[] {
+    return this._drawable;
   }
 }

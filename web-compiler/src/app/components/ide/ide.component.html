@@ -7,33 +7,40 @@
       (voidEmitter)="execVoidAction($event)"
     ></app-actions-nav>
   </div>
-  <!-- body -->
-  <div class="row h90vh w100vw">
-    <!-- aside -->
-    <div class="col-sm-2 w25pctn">
-      <app-aside-files
-        [fileNames]="tabFiles"
-        [activeFile]="activeFile"
-        (fileToEdit)="switchTab($event)"
-      ></app-aside-files>
-    </div>
-    <!-- code sectjion -->
-    <div class="col-lg-10 w75pctn">
-      <div class="row h75pctn" *ngIf="this.tabFiles.length > 0">
-        <app-files-edit
-          [activeTab]="tabFiles[this.activeFile]"
-        ></app-files-edit>
+  <!-- main view -->
+  <div *ngIf="_view != 3">
+    <!-- body -->
+    <div class="row h90vh w100vw">
+      <!-- aside -->
+      <div class="col-sm-2 w25pctn">
+        <app-aside-files
+          [fileNames]="tabFiles"
+          [activeFile]="activeFile"
+          (fileToEdit)="switchTab($event)"
+        ></app-aside-files>
       </div>
-      <div class="row h25pctn">
-        <app-console-log></app-console-log>
+      <!-- code sectjion -->
+      <div class="col-lg-10 w75pctn">
+        <div class="row h75pctn" *ngIf="this.tabFiles.length > 0">
+          <app-files-edit
+            [activeTab]="tabFiles[this.activeFile]"
+          ></app-files-edit>
+        </div>
+        <div class="row h25pctn">
+          <app-console-log></app-console-log>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- report section -->
-  <div *ngIf="_view === 1">
+    <!-- report section -->
     <app-reports
+      *ngIf="_view === 1"
       [_errors_analysis]="_errors"
       (voidEmitter)="execVoidAction($event)"
-    ></app-reports>
+    >
+    </app-reports>
+  </div>
+  <!-- img gallery -->
+  <div *ngIf="_view === 3">
+    <app-graph-gallery [_drawable]="get_drawable()"></app-graph-gallery>
   </div>
 </div>

@@ -15,11 +15,19 @@ export class CRLEvaluator {
     this._func_map = new Map<String, FunctionEvaluator>();
   }
 
-  public eval(_root: AstNode, _errors: Array<AnalysisError>): void {
+  public eval(
+    _root: AstNode,
+    _errors: Array<AnalysisError>,
+    _drawable_graphs: AstNode[]
+  ): void {
     this.sub_eval(_root, _errors);
-    console.log(this._sym_table);
-    console.log(this._func_map);
-    console.log(_errors);
+    // run main eval
+    if (this._main_func != undefined) {
+      this._main_func.eval(_drawable_graphs);
+    }
+    // console.log(this._sym_table);
+    // console.log(this._func_map);
+    // console.log(_errors);
   }
 
   private sub_eval(_cur_node: AstNode, _errors: Array<AnalysisError>): void {
@@ -49,13 +57,20 @@ export class CRLEvaluator {
         // add function
         let _func: FunctionEvaluator = new FunctionEvaluator(
           this._sym_table,
-          _node
+          _node,
+          this._func_map,
+          _errors
         );
         this._func_map.set(_func.id, _func);
         break;
       case EPVN.func_main: // execute
         if (this._main_func === undefined) {
-          this._main_func = new FunctionEvaluator(this._sym_table, _node);
+          this._main_func = new FunctionEvaluator(
+            this._sym_table,
+            _node,
+            this._func_map,
+            _errors
+          );
         } else {
           _errors.push(
             new AnalysisError(
